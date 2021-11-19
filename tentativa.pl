@@ -20,47 +20,39 @@ connected(X,Y) :- edge(Y,X).
 connected(X,Y,Custo) :- edge(X,Y,Custo).
 connected(X,Y,Custo) :- edge(Y,X,Custo).
 
+last([X],X) :-! .
+last([_|Z],X) :- last(Z,X).
 
+shortestPath(A,B,Shortest) :-pathList(A,B,[Head|Tail]),
+                             last(Head,StartingShortest),
+                             shortRec(StartingShortest,Tail,Shortest).
 
-calculateSizePath([Node1 ,Node2 | Rest],Size) :- 
-                                                 connected(Node1,Node2,Size1) , 
-                                                 calculateSizePath([Node2 | Rest],Size2),
-                                                 Size is Size1 +Size2.
+shortRec(CurrentShortest,[Head|Tail],Shortest) :-
+                     last(Head,ShortestHead),
+                     NewShortest is min(CurrentShortest,ShortestHead),
+                     shortRec(NewShortest,Tail,Shortest).
 
-calculateSizePath([Node1 , Node2 | [] ],Size) :- connected(Node1,Node2,Size).
-
-% sizePaths(A,B,List) :- pathList(A,B,List1), calculateSizePath().
+shortRec(CurrentShortest,[Element],Shortest) :-
+                     last(Element,Weight),
+                     Shortest is min(CurrentShortest,Weight).
 
 pathList(A,B,List) :- findall(X,path(A,B,X),List).
 weight(A,B,Size) :- path(A,B,Caminho), calculateSizePath(Caminho,Size).
 weightList(A,B,List) :- findall(X,weight(A,B,X),List).
 
 path(A,B,Path) :-
-       travel(A,B,[A],Q), 
+       travel(A,B,[A],0,Q),
        reverse(Q,Path).
 
-travel(A,B,P,[B|P]) :- 
-       connected(A,B,_).
 
-travel(A,B,Visited,Path) :-
-       connected(A,C,_), % Procurar um C que esteja conectado ao nodo A
+travel(A,B,P,Custo,[CustoTotal,B|P]) :-
+       connected(A,B,Custo1),
+       CustoTotal is Custo1 + Custo.
+
+travel(A,B,Visited,SizeInicial,Path) :-
+       connected(A,C,Size1), % Procurar um C que esteja conectado ao nodo A
+       % write(A),write(' custa '),write(Size1),write(' para '),writeln(C),
        C \== B,
        \+member(C,Visited), %garantir caminho nao ciclico
-       travel(C,B,[C|Visited],Path).  %Acrescentar o nodo C aos nodos Visitados
-
-
-shortest(A,B,Path,Length) :-
-   setof([P,L],path(A,B,P,L),Set),
-   Set = [_|_], % fail if no path 
-   minimal(Set,[Path,Length]).
-
-
-list_min([L|Ls], Min) :-
-    list_min(Ls, L, Min).
-
-list_min([], Min, Min).
-list_min([L|Ls], Min0, Min) :-
-    Min1 is min(L, Min0),
-    list_min(Ls, Min1, Min).
-
-% main :- foreach(X,[1,2,3]) do writeln(X).
+       SizeTotal is Size1 + SizeInicial,
+       travel(C,B,[C|Visited],SizeTotal,Path).  %Acrescentar o nodo C aos nodos Visitados
