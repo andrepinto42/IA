@@ -20,7 +20,7 @@ entrega(pinto,toze,5,20,15,bicicleta).
 entrega(pinto,toze,5,20,15,bicicleta).
 entrega(daniela,toze,5,20,15,carro).
 
-rklgmsrpmsrpg
+rklgmsrpmsrpgxfgbdfxxb
 
 
 % myRec/2
