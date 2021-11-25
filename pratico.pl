@@ -4,7 +4,7 @@ estafeta(daniela).
 
 %Nome | Residencia
 cliente(paulo,'rua dos clerigos').
-cliente(toze,'rua dos clerigos').
+cliente(toze,'rua das maças').
 
 % Nome | Preco
 encomenda(armario,100).
@@ -28,9 +28,9 @@ mes('dezembro',12).
 
 
 %Nome | Rating | Peso Maximo | Velocidade Media
-veiculo(bicicleta,1,5,10).
+veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
-veiculo(carro,3,100,25).
+veiculo(carro,1,100,25).
 % estafeta | cliente | Rating | Distancia | Peso | Veiculo | Encomenda | Data do pedido | Tempo para Entregar
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pc,25,'abril',2021,3).
@@ -49,21 +49,28 @@ entrega(joao,paulo,fones,27,'março',2021,4).
 entrega(pinto,toze,pc,27,'março',2021,1).
 entrega(pinto,toze,fones,27,'março',2021,0).
 entrega(pinto,toze,pao,27,'abril',2021,5).
+entrega(joao,paulo,fones,29,'março',2021,4).
+
 %--------------------------------------------------
 %--------------------------------------------------
 %             AUXILIARES
 %--------------------------------------------------
 %--------------------------------------------------
 
+tempo(Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Dia + DiasMes*30 + Ano * 365.
+
 foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- entrega(Estafeta,Cliente,_,_,_,_,Encomenda,Dia1,Mes1,Ano1,Prazo),
                                                         entrega(Estafeta,Cliente,Encomenda,Dia2,Mes2,Ano2,_),
-                                                        mes(Mes1,DiasMes1),
-                                                        mes(Mes2,DiasMes2),
-                                                        Tempo1 is Dia1 + DiasMes1*30 + Ano1 * 365,
-                                                        Tempo2 is  Dia2 + DiasMes2*30 + Ano2 * 365,
+                                                        tempo(Dia1,Mes1,Ano1,Tempo1),
+                                                        tempo(Dia2,Mes2,Ano2,Tempo2),
                                                         PrazoFinal is Tempo2 -Tempo1,
                                                         write(Prazo),write(' e o prazo final é '),write(PrazoFinal),
                                                         Prazo > PrazoFinal,!.
+
+
+
+
+
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 %   
@@ -74,7 +81,46 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- entrega(Estafeta,Clien
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-totalEntregasTempo(Dia,Mes,Ano,Tempo,Veiculo,NumeroTotal) :- entrega(Estafeta,Cliente,Encomenda,_,_,_,_,_,_,_,_).
+
+allEntregas(Dia,Mes,Ano,Offset,Number) :- findall(X,dataEntrega(Dia,Mes,Ano,Offset,X),List),length(List,Number).
+
+dataEntrega(Dia1,Mes1,Ano1,Offset,Data) :- entrega(_,_,_,Dia2,Mes2,Ano2,_), 
+                                        tempo(Dia1,Mes1,Ano1,Tempo1),
+                                        tempo(Dia2,Mes2,Ano2,Tempo2),
+                                        Offset > Tempo2-Tempo1,
+                                        append([Dia],[],Rest1),append([Mes],Rest1,Rest2),append([Ano],Rest2,Data).
+%------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
+%   
+%                               Query5
+%• identificar quais as zonas (e.g., rua ou freguesia) com maior volume de
+%  entregas por parte da Green Distribution
+%
+%------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
+
+%Este processo tem tempo O(N^2), mas encontra a rua mais comum
+ruaCommon(RuaFinal) :- findall(X,ruaEntregasCliente(X),[Head | Tail]), ruasRec(Tail,Head,1,NumberVisited,RuaFinal),
+                        write('A rua mais comum é a '),write(RuaFinal),write(' que foi visitada '),write(NumberVisited),writeln(' vezes').
+ 
+ruasRec([],RuaFinal,Number,Number,RuaFinal).
+ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :- common( Elem ,[Head | Tail],NumberFinal), 
+                                                (NumberFinal> Number ->
+                                                ruasRec( Tail,Elem,NumberFinal,X,RuaFinal);
+                                                ruasRec( Tail,Elem,Number,X,RuaFinal)
+                                                ).
+
+
+ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,Cliente,_,_,_,_,_).
+
+%Retorna o numero de vezes que aparece um determinado elemento em uma lista
+common(Elem,List,X) :- common([Elem | List],X).
+common([Head | Tail],X) :- numberCommom(Tail,Head,1,X).
+
+numberCommom([],_,NumberFinal,NumberFinal).
+numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :- (Head == Common -> NumberInicial2 is NumberInicial + 1, numberCommom(Tail,Common,NumberInicial2,NumberFinal);
+                                                                        numberCommom(Tail,Common,NumberInicial,NumberFinal)).
+
 
 
 %------------------------------------------------------------------------
@@ -135,25 +181,20 @@ mostEcoAux( [X|Xs] , Final) :-
 mostEcoAux( [], Final, Final ).
 mostEcoAux( [Estafeta1|Xs] , CurrentEstafeta , Final ) :-
   compareEstafetaEcologic(Estafeta1,CurrentEstafeta,NewEstafeta),
-  write('Current = '),write(CurrentEstafeta),write(' now is '),writeln( NewEstafeta),
   mostEcoAux( Xs , NewEstafeta , Final ).
                                
 
 compareEstafetaEcologic(Estafeta1,Estafeta2,EstafetaFinal) :- 
                                                             ecologicoNivel(Estafeta1,Nivel1),
                                                             ecologicoNivel(Estafeta2,Nivel2),
-                                write('Nivel = '),write(Nivel1),write(' para '),writeln(Estafeta1),
-                                write('Nivel = '),write(Nivel2),write(' para '),writeln(Estafeta2),
-                                                            (Nivel2 =< 0 -> EstafetaFinal = Estafeta1;true),
-                                                            (Nivel1 =< 0 -> EstafetaFinal = Estafeta2;true),
-                                                            Nivel1>Nivel2 ->EstafetaFinal = Estafeta2;
+                                                            Nivel1<Nivel2 ->EstafetaFinal = Estafeta2;
                                                             EstafetaFinal = Estafeta1.
 
 ecologicoNivel(Estafeta,Nivel) :- findall(X,ecologicoEstafeta(Estafeta,X),List),
                                 sumlist(List,Tamanho),
                                 length(List,TamLista),
-                                TamLista >0,
-                                Nivel is Tamanho / TamLista.
+                                (TamLista =< 0 -> Nivel is 0;
+                                Nivel is Tamanho / TamLista).
 
 ecologicoEstafeta(Estafeta,Rating) :- entrega(Estafeta,_,_,_,_,Veiculo,_,_,_,_,_),
                                     veiculo(Veiculo,Rating,_,_).
