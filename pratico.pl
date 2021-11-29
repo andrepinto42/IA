@@ -31,7 +31,10 @@ mes('dezembro',12).
 veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
 veiculo(carro,1,100,25).
+
+data('data1',25,'abril',2021,19,0).
 % estafeta | cliente | Rating | Distancia | Peso | Veiculo | Encomenda | Data do pedido | Tempo para Entregar
+entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pc,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,fones,24,'março',2021,3).
@@ -59,14 +62,45 @@ entrega(joao,paulo,fones,29,'março',2021,4).
 
 tempo(Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Dia + DiasMes*30 + Ano * 365.
 
-foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- entrega(Estafeta,Cliente,_,_,_,_,Encomenda,Dia1,Mes1,Ano1,Prazo),
-                                                        entrega(Estafeta,Cliente,Encomenda,Dia2,Mes2,Ano2,_),
-                                                        tempo(Dia1,Mes1,Ano1,Tempo1),
-                                                        tempo(Dia2,Mes2,Ano2,Tempo2),
-                                                        PrazoFinal is Tempo2 -Tempo1,
-                                                        write(Prazo),write(' e o prazo final é '),write(PrazoFinal),
-                                                        Prazo > PrazoFinal,!.
+foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- 
+	entrega(Estafeta,Cliente,_,_,_,_,Encomenda,Dia1,Mes1,Ano1,Prazo),
+    entrega(Estafeta,Cliente,Encomenda,Dia2,Mes2,Ano2,_),
+    tempo(Dia1,Mes1,Ano1,Tempo1),
+    tempo(Dia2,Mes2,Ano2,Tempo2),
+    PrazoFinal is Tempo2 -Tempo1,
+    write(Prazo),write(' e o prazo final é '),write(PrazoFinal),
+    Prazo > PrazoFinal,!.
 
+
+%------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
+%   
+%                               Query8
+%• Identificar o número total de entregas pelos estafetas, num determinado
+%						intervalo de tempo;
+%
+%------------------------------------------------------------------------------
+%------------------------------------------------------------------------------
+
+query8(Dia,Mes,Ano,Offset,EntregasTotais) :- findall(X,query8aux(Dia,Mes,Ano,Offset,X),List),sumlist(List,EntregasTotais).
+
+query8aux(Dia1,Mes1,Ano1,Offset,Num) :- 
+	estafeta(Estafeta),
+	entregasTotalEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Num).
+
+
+entregasTotalEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Num) :- 
+	findall(Data,dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data),List),
+	length(List,Num),
+	write(Estafeta),write(' realizou '),write(Num),writeln(' entregas').
+
+dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data) :- 
+    entrega(Estafeta,_,_,Dia2,Mes2,Ano2,_),
+    tempo(Dia1,Mes1,Ano1,Tempo1),
+    tempo(Dia2,Mes2,Ano2,Tempo2),
+    Dif is Tempo2-Tempo1,
+    Dif >= 0, Offset > Dif,
+	Data is 1.
 
 
 
@@ -81,14 +115,27 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- entrega(Estafeta,Clien
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
+%SO funciona para um offset de Dias
+% sumEntregas(List,Num)
 
-allEntregas(Dia,Mes,Ano,Offset,Number) :- findall(X,dataEntrega(Dia,Mes,Ano,Offset,X),List),length(List,Number).
+query7(Dia,Mes,Ano,Offset,N) :- findall(X,allEntregas(Dia,Mes,Ano,Offset,X),List ), sumlist(List,N).
 
-dataEntrega(Dia1,Mes1,Ano1,Offset,Data) :- entrega(_,_,_,Dia2,Mes2,Ano2,_), 
-                                        tempo(Dia1,Mes1,Ano1,Tempo1),
-                                        tempo(Dia2,Mes2,Ano2,Tempo2),
-                                        Offset > Tempo2-Tempo1,
-                                        append([Dia],[],Rest1),append([Mes],Rest1,Rest2),append([Ano],Rest2,Data).
+allEntregas(Dia,Mes,Ano,Offset,List) :-  
+	veiculo(Veiculo,_,_,_),
+	findall(X,allEntregasVeiculo(Dia,Mes,Ano,Offset,Veiculo,X),List).
+
+allEntregasVeiculo(Dia,Mes,Ano,Offset,Veiculo,Number) :- 
+	findall(X,dataEntregaVeiculo(Dia,Mes,Ano,Veiculo,Offset,X),List),length(List,Number),
+    write('De '),write(Veiculo),write(' foram feitas estas entregas '),writeln(Number).
+
+dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
+	entrega(Estafeta1,Cliente1,Encomeda1,Dia2,Mes2,Ano2,_),
+    entrega(Estafeta1,Cliente1,_,_,_,Veiculo,Encomeda1,_,_,_,_),
+    tempo(Dia1,Mes1,Ano1,Tempo1),
+    tempo(Dia2,Mes2,Ano2,Tempo2),
+    Dif is Tempo2-Tempo1,
+    Dif >= 0, Offset > Dif,
+    Data is 1.
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 %   
@@ -99,17 +146,19 @@ dataEntrega(Dia1,Mes1,Ano1,Offset,Data) :- entrega(_,_,_,Dia2,Mes2,Ano2,_),
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-%Este processo tem tempo O(N^2), mas encontra a rua mais comum
-ruaCommon(RuaFinal) :- findall(X,ruaEntregasCliente(X),[Head | Tail]), ruasRec(Tail,Head,1,NumberVisited,RuaFinal),
-                        write('A rua mais comum é a '),write(RuaFinal),write(' que foi visitada '),write(NumberVisited),writeln(' vezes').
+%Este processo tem tempo O(N^2 / 2), mas encontra a rua mais comum
+ruaCommon(RuaFinal) :- 
+	findall(X,ruaEntregasCliente(X),[Head | Tail]),
+	ruasRec(Tail,Head,1,NumberVisited,RuaFinal),
+    write('A rua mais comum é a '),write(RuaFinal),write(' que foi visitada '),write(NumberVisited),writeln(' vezes').
  
 ruasRec([],RuaFinal,Number,Number,RuaFinal).
-ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :- common( Elem ,[Head | Tail],NumberFinal), 
-                                                (NumberFinal> Number ->
-                                                ruasRec( Tail,Elem,NumberFinal,X,RuaFinal);
-                                                ruasRec( Tail,Elem,Number,X,RuaFinal)
-                                                ).
-
+ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :-
+	common( Elem ,[Head | Tail],NumberFinal), 
+    (NumberFinal> Number ->
+    ruasRec( Tail,Elem,NumberFinal,X,RuaFinal);
+    ruasRec( Tail,Elem,Number,X,RuaFinal)
+    ).
 
 ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,Cliente,_,_,_,_,_).
 
@@ -118,8 +167,9 @@ common(Elem,List,X) :- common([Elem | List],X).
 common([Head | Tail],X) :- numberCommom(Tail,Head,1,X).
 
 numberCommom([],_,NumberFinal,NumberFinal).
-numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :- (Head == Common -> NumberInicial2 is NumberInicial + 1, numberCommom(Tail,Common,NumberInicial2,NumberFinal);
-                                                                        numberCommom(Tail,Common,NumberInicial,NumberFinal)).
+numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :- 
+	(Head == Common -> NumberInicial2 is NumberInicial + 1, numberCommom(Tail,Common,NumberInicial2,NumberFinal);
+    numberCommom(Tail,Common,NumberInicial,NumberFinal)).
 
 
 
@@ -149,9 +199,10 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),enco
 %-------------------------------------------------------------------------------------------
 %Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
 
-precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- veiculo(Veiculo,Rating,_,_),
-                                                      encomenda(Encomenda,PrecoEncomenda),
-                                                      Preco is PrecoEncomenda + Rating * Distancia. 
+precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- 
+	veiculo(Veiculo,Rating,_,_),
+    encomenda(Encomenda,PrecoEncomenda),
+    Preco is PrecoEncomenda + Rating * Distancia. 
 
 
 qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(Estafeta,Cliente,_,_,_,_,Encomenda).
@@ -185,17 +236,19 @@ mostEcoAux( [Estafeta1|Xs] , CurrentEstafeta , Final ) :-
                                
 
 compareEstafetaEcologic(Estafeta1,Estafeta2,EstafetaFinal) :- 
-                                                            ecologicoNivel(Estafeta1,Nivel1),
-                                                            ecologicoNivel(Estafeta2,Nivel2),
-                                                            Nivel1<Nivel2 ->EstafetaFinal = Estafeta2;
-                                                            EstafetaFinal = Estafeta1.
+    ecologicoNivel(Estafeta1,Nivel1),
+    ecologicoNivel(Estafeta2,Nivel2),
+    Nivel1<Nivel2 ->EstafetaFinal = Estafeta2;
+    EstafetaFinal = Estafeta1.
 
-ecologicoNivel(Estafeta,Nivel) :- findall(X,ecologicoEstafeta(Estafeta,X),List),
-                                sumlist(List,Tamanho),
-                                length(List,TamLista),
-                                (TamLista =< 0 -> Nivel is 0;
-                                Nivel is Tamanho / TamLista).
+ecologicoNivel(Estafeta,Nivel) :- 
+	findall(X,ecologicoEstafeta(Estafeta,X),List),
+    sumlist(List,Tamanho),
+    length(List,TamLista),
+    (TamLista =< 0 -> Nivel is 0;
+    Nivel is Tamanho / TamLista).
 
-ecologicoEstafeta(Estafeta,Rating) :- entrega(Estafeta,_,_,_,_,Veiculo,_,_,_,_,_),
-                                    veiculo(Veiculo,Rating,_,_).
+ecologicoEstafeta(Estafeta,Rating) :- 
+	entrega(Estafeta,_,_,_,_,Veiculo,_,_,_,_,_),
+    veiculo(Veiculo,Rating,_,_).
                             
