@@ -54,11 +54,13 @@ entrega(pinto,toze,fones,27,'março',2021,0).
 entrega(pinto,toze,pao,27,'abril',2021,5).
 entrega(joao,paulo,fones,29,'março',2021,4).
 
-%--------------------------------------------------
-%--------------------------------------------------
-%             AUXILIARES
-%--------------------------------------------------
-%--------------------------------------------------
+%-----------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------
+%
+%                                AUXILIARES
+%
+%-----------------------------------------------------------------------------------
+%-----------------------------------------------------------------------------------
 
 tempo(Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Dia + DiasMes*30 + Ano * 365.
 
@@ -68,7 +70,7 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :-
     tempo(Dia1,Mes1,Ano1,Tempo1),
     tempo(Dia2,Mes2,Ano2,Tempo2),
     PrazoFinal is Tempo2 -Tempo1,
-    write(Prazo),write(' e o prazo final é '),write(PrazoFinal),
+    write(Prazo),write(' e o prazo final é '),writeln(PrazoFinal),
     Prazo > PrazoFinal,!.
 
 
@@ -97,7 +99,10 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-
+entregues(Dia,Mes,Ano,Offset,N) :- 
+    foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
+    write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
+    N is 1.
 
 
 %------------------------------------------------------------------------------
