@@ -37,8 +37,8 @@ data('data1',25,'abril',2021,19,0).
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pc,25,'abril',2021,3).
-entrega(joao,paulo,5,20,15,mota,fones,24,'março',2021,3).
-entrega(joao,paulo,5,20,15,bicicleta,fones,25,'março',2021,3).
+entrega(joao,toze,5,20,15,mota,fones,24,'março',2021,3).
+entrega(joao,toze,5,20,15,bicicleta,fones,25,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,pc,21,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,fones,26,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,pao,25,'abril',2021,3).
@@ -85,6 +85,9 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :-
 %
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
+
+pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(Estafeta,_,_,_,Peso,_,_,Dia,Mes,Ano,_).
+pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
 
@@ -180,7 +183,15 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
+ratingEstafeta(Estafeta,Rating) :- entrega(Estafeta,_,Rating,_,_,_,_,_,_,_,_).
 
+classificMedia(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
+
+tamanho_lista([],0).
+tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
+
+somar_lista([],0).
+somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
 
 
 
@@ -245,9 +256,12 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),enco
 %
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------
+%entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 
 
 
+listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
+qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
 
 
 
@@ -271,8 +285,7 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(Estafeta,Cliente,_,_,_,_,Encomenda).
 listaEstafetas(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
 
-listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
-qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
+
 
 
 
