@@ -37,8 +37,8 @@ data('data1',25,'abril',2021,19,0).
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 entrega(joao,paulo,5,20,15,mota,pc,25,'abril',2021,3).
-entrega(joao,paulo,5,20,15,mota,fones,24,'março',2021,3).
-entrega(joao,paulo,5,20,15,bicicleta,fones,25,'março',2021,3).
+entrega(joao,toze,5,20,15,mota,fones,24,'março',2021,3).
+entrega(joao,toze,5,20,15,bicicleta,fones,25,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,pc,21,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,fones,26,'março',2021,3).
 entrega(pinto,toze,5,20,15,bicicleta,pao,25,'abril',2021,3).
@@ -83,6 +83,9 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :-
 %
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
+
+pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(Estafeta,_,_,_,Peso,_,_,Dia,Mes,Ano,_).
+pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
 
@@ -250,11 +253,10 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),enco
 %------------------------------------------------------------------------
 %entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 
-qualCliente2(Estafeta,Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
-listaClientes2(Estafeta, List) :- setof(X,qualCliente2(Estafeta,X),List).
 
 
-
+listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
+qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
 
 
 
@@ -278,8 +280,7 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(Estafeta,Cliente,_,_,_,_,Encomenda).
 listaEstafetas(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
 
-listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
-qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
+
 
 
 
