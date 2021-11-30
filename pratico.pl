@@ -32,27 +32,30 @@ veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
 veiculo(carro,1,100,25).
 
+
+
 data('data1',25,'abril',2021,19,0).
-% estafeta | cliente | Rating | Distancia | Peso | Veiculo | Encomenda | Data do pedido | Tempo para Entregar
-entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
-entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
-entrega(joao,paulo,5,20,15,mota,pc,25,'abril',2021,3).
-entrega(joao,toze,5,20,15,mota,fones,24,'março',2021,3).
-entrega(joao,toze,5,20,15,bicicleta,fones,25,'março',2021,3).
-entrega(pinto,toze,5,20,15,bicicleta,pc,21,'março',2021,3).
-entrega(pinto,toze,5,20,15,bicicleta,fones,26,'março',2021,3).
-entrega(pinto,toze,5,20,15,bicicleta,pao,25,'abril',2021,3).
+% ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
+
+pedido('0001',paulo,20,pao,9,25,'abril',2021,72).
+pedido('0002',paulo,20,pao,9,25,'abril',2021,3). % Este pedido nao foi entregue
+pedido('0003',paulo,20,pc,9,25,'abril',2021,3).
+pedido('0004',paulo,20,fones,9,24,'março',2021,3).
+pedido('0005',paulo,20,fones,9,25,'março',2021,3).
+pedido('0006',toze,20,pc,9,21,'março',2021,3).
+pedido('0007',toze,20,fones,9,26,'março',2021,3).
+pedido('0008',toze,20,pao,9,25,'abril',2021,3).
+
 % entrega(daniela,toze,5,20,15,carro,pc,25,'abril',2021,3).
 
-% Estafeta | Cliente | Encomenda  | Dia | Mes | Ano | Rating
-entrega(joao,paulo,pao,26,'abril',2021,5).
-entrega(joao,paulo,pc,27,'abril',2021,3).
-entrega(joao,paulo,fones,27,'março',2021,1).
-entrega(joao,paulo,fones,27,'março',2021,4).
-entrega(pinto,toze,pc,27,'março',2021,1).
-entrega(pinto,toze,fones,27,'março',2021,0).
-entrega(pinto,toze,pao,27,'abril',2021,5).
-entrega(joao,paulo,fones,29,'março',2021,4).
+% idPedido | Estafeta | Cliente | Veiculo | | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
+entrega('0001',joao,paulo,mota,pao,15,10,26,'abril',2021,5).
+entrega('0003',joao,paulo,carro,pc,15,10,27,'abril',2021,3).
+entrega('0004',joao,paulo,mota,fones,15,10,27,'março',2021,1).
+entrega('0005',joao,paulo,bicicleta,15,fones,10,27,'março',2021,4).
+entrega('0006',pinto,toze,carro,pc,15,10,27,'março',2021,1).
+entrega('0007',pinto,toze,mota,fones,15,10,27,'março',2021,0).
+entrega('0008',pinto,toze,pao,bicicleta,15,10,27,'abril',2021,5).
 
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
@@ -62,18 +65,24 @@ entrega(joao,paulo,fones,29,'março',2021,4).
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
 
-tempo(Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Dia + DiasMes*30 + Ano * 365.
+tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + DiasMes*30 + Ano * 365) * 24.
 
-foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :- 
-	entrega(Estafeta,Cliente,_,_,_,_,Encomenda,Dia1,Mes1,Ano1,Prazo),
-    entrega(Estafeta,Cliente,Encomenda,Dia2,Mes2,Ano2,_),
-    tempo(Dia1,Mes1,Ano1,Tempo1),
-    tempo(Dia2,Mes2,Ano2,Tempo2),
+foiEntregue(ID1) :- 
+	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
+    entrega(ID1,_,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para dias
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para dias
     PrazoFinal is Tempo2 -Tempo1,
-    write(Prazo),write(' e o prazo final é '),writeln(PrazoFinal),
+    write(Prazo),write(' Horas para entregar e entregou ao final de '),write(PrazoFinal),writeln(' horas'),
     Prazo > PrazoFinal,!.
+    
 
+%Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
 
+precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- 
+	veiculo(Veiculo,Rating,_,_),
+    encomenda(Encomenda,PrecoEncomenda),
+    Preco is PrecoEncomenda + Rating * Distancia. 
 
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
@@ -86,7 +95,7 @@ foiEntregue(Estafeta,Cliente,Encomenda,Dia1,Mes1,Ano1) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(Estafeta,_,_,_,Peso,_,_,Dia,Mes,Ano,_).
+pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,_,Peso,_,Dia,Mes,Ano,_).
 pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
@@ -98,14 +107,17 @@ pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano
 %• calcular o número de encomendas entregues e não entregues pela Green
 %           Distribution, num determinado período de tempo
 %
+%       nao entregues: nao foram entregues + entregues fora de tempo
 %
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
-
+%TODO
 entregues(Dia,Mes,Ano,Offset,N) :- 
     foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
     write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
     N is 1.
+
+
 
 
 %------------------------------------------------------------------------------
@@ -131,12 +143,13 @@ entregasTotalEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Num) :-
 	write(Estafeta),write(' realizou '),write(Num),writeln(' entregas').
 
 dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data) :- 
-    entrega(Estafeta,_,_,Dia2,Mes2,Ano2,_),
-    tempo(Dia1,Mes1,Ano1,Tempo1),
-    tempo(Dia2,Mes2,Ano2,Tempo2),
+    entrega(_,Estafeta,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    tempo(0,Dia1,Mes1,Ano1,Tempo1),
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
     Dif is Tempo2-Tempo1,
-    Dif >= 0, Offset > Dif,
+    Dif >= 0, Offset * 24 > Dif,
 	Data is 1.
+
 
 
 
@@ -165,13 +178,15 @@ allEntregasVeiculo(Dia,Mes,Ano,Offset,Veiculo,Number) :-
     write('De '),write(Veiculo),write(' foram feitas estas entregas '),writeln(Number).
 
 dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
-	entrega(Estafeta1,Cliente1,Encomeda1,Dia2,Mes2,Ano2,_),
-    entrega(Estafeta1,Cliente1,_,_,_,Veiculo,Encomeda1,_,_,_,_),
-    tempo(Dia1,Mes1,Ano1,Tempo1),
-    tempo(Dia2,Mes2,Ano2,Tempo2),
+	entrega(_,_,_,Veiculo,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    tempo(0,Dia1,Mes1,Ano1,Tempo1),
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
     Dif is Tempo2-Tempo1,
-    Dif >= 0, Offset > Dif,
+    Dif >= 0, Offset * 24 > Dif,
     Data is 1.
+
+% idPedido | Estafeta |Cliente   Veiculo  | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
+
 
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
@@ -183,15 +198,17 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-ratingEstafeta(Estafeta,Rating) :- entrega(Estafeta,_,Rating,_,_,_,_,_,_,_,_).
 
 classificMedia(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
+
+ratingEstafeta(Estafeta,Rating) :- entrega(_,Estafeta,_,_,_,_,_,_,_,_,Rating).
 
 tamanho_lista([],0).
 tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
 
 somar_lista([],0).
 somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
+
 
 
 
@@ -219,9 +236,12 @@ ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :-
     ruasRec( Tail,Elem,Number,X,RuaFinal)
     ).
 
-ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,Cliente,_,_,_,_,_).
+
+ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,_,_,_).
+
 
 %Retorna o numero de vezes que aparece um determinado elemento em uma lista
+
 common(Elem,List,X) :- common([Elem | List],X).
 common([Head | Tail],X) :- numberCommom(Tail,Head,1,X).
 
@@ -243,7 +263,7 @@ numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :-
 
 faturacao(Dia,Mes,Ano,Faturacao) :- findall(X,faturacaoAux(Dia,Mes,Ano,X),List), sumlist(List,Faturacao).
 
-faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),encomenda(Encomenda,Faturacao).
+faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_),encomenda(Encomenda,Faturacao).
 
 
 
@@ -256,12 +276,11 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),enco
 %
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------
-%entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
 
 
 
 listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
-qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
+qualCliente(Estafeta, Cliente) :- entrega(_,Estafeta,Cliente,_,_,_,_,_,_,_).
 
 
 
@@ -274,16 +293,11 @@ qualCliente(Estafeta, Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
 %
 %-------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------
-%Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
-
-precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- 
-	veiculo(Veiculo,Rating,_,_),
-    encomenda(Encomenda,PrecoEncomenda),
-    Preco is PrecoEncomenda + Rating * Distancia. 
 
 
-qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(Estafeta,Cliente,_,_,_,_,Encomenda).
 listaEstafetas(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
+
+qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(_,Estafeta,Cliente,Encomenda,_,_,_,_,_,_).
 
 
 
@@ -324,7 +338,7 @@ ecologicoNivel(Estafeta,Nivel) :-
     (TamLista =< 0 -> Nivel is 0;
     Nivel is Tamanho / TamLista).
 
-ecologicoEstafeta(Estafeta,Rating) :- 
-	entrega(Estafeta,_,_,_,_,Veiculo,_,_,_,_,_),
+ecologicoEstafeta(Estafeta,Rating) :-
+    entrega(_,Estafeta,_,Veiculo,_,_,_,_,_,_,_),
     veiculo(Veiculo,Rating,_,_).
                             
