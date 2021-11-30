@@ -32,9 +32,8 @@ veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
 veiculo(carro,1,100,25).
 
-
-
 data('data1',25,'abril',2021,19,0).
+
 % ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
 
 pedido('0001',paulo,20,pao,9,25,'abril',2021,72).
@@ -48,12 +47,17 @@ pedido('0008',toze,20,pao,9,25,'abril',2021,3).
 
 % entrega(daniela,toze,5,20,15,carro,pc,25,'abril',2021,3).
 
-% idPedido | Estafeta | Cliente | Veiculo | | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
+% idPedido | Estafeta | Cliente | Veiculo | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
 entrega('0001',joao,paulo,mota,pao,15,10,26,'abril',2021,5).
 entrega('0003',joao,paulo,carro,pc,15,10,27,'abril',2021,3).
 entrega('0004',joao,paulo,mota,fones,15,10,27,'março',2021,1).
 entrega('0005',joao,paulo,bicicleta,15,fones,10,27,'março',2021,4).
 entrega('0006',pinto,toze,carro,pc,15,10,27,'março',2021,1).
+tamanho_lista([],0).
+tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
+
+somar_lista([],0).
+somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
 entrega('0007',pinto,toze,mota,fones,15,10,27,'março',2021,0).
 entrega('0008',pinto,toze,pao,bicicleta,15,10,27,'abril',2021,5).
 
@@ -150,10 +154,6 @@ dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data) :-
     Dif >= 0, Offset * 24 > Dif,
 	Data is 1.
 
-
-
-
-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 %   
@@ -184,8 +184,6 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
     Dif is Tempo2-Tempo1,
     Dif >= 0, Offset * 24 > Dif,
     Data is 1.
-
-% idPedido | Estafeta |Cliente   Veiculo  | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
 
 
 %------------------------------------------------------------------------------
@@ -278,11 +276,8 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_
 %------------------------------------------------------------------------
 
 
-
 listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
 qualCliente(Estafeta, Cliente) :- entrega(_,Estafeta,Cliente,_,_,_,_,_,_,_).
-
-
 
 %-------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------
@@ -294,14 +289,9 @@ qualCliente(Estafeta, Cliente) :- entrega(_,Estafeta,Cliente,_,_,_,_,_,_,_).
 %-------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------
 
-
 listaEstafetas(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
 
 qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(_,Estafeta,Cliente,Encomenda,_,_,_,_,_,_).
-
-
-
-
 
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
