@@ -175,7 +175,15 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
+ratingEstafeta(Estafeta,Rating) :- entrega(Estafeta,_,Rating,_,_,_,_,_,_,_,_).
 
+classificMedia(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
+
+tamanho_lista([],0).
+tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
+
+somar_lista([],0).
+somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
 
 
 
@@ -240,6 +248,10 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,Encomenda,Dia,Mes,Ano,_),enco
 %
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------
+%entrega(joao,paulo,5,20,15,mota,pao,25,'abril',2021,3).
+
+qualCliente2(Estafeta,Cliente) :- entrega(Estafeta,Cliente,_,_,_,_,_).
+listaClientes2(Estafeta, List) :- setof(X,qualCliente2(Estafeta,X),List).
 
 
 
