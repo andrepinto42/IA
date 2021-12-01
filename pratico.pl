@@ -84,7 +84,7 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 
 pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,Encomenda,_,Dia,Mes,Ano,_), encomenda(Encomenda,_,Peso).
 
-quer10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
+query10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
 
