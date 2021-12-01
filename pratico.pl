@@ -34,7 +34,6 @@ veiculo(carro,1,100,25).
 
 
 % ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
-
 pedido('0001',paulo,20,pao,9,25,'abril',2021,72).
 pedido('0002',paulo,20,pao,9,25,'abril',2021,3). % Este pedido nao foi entregue
 pedido('0003',paulo,20,pc,9,25,'abril',2021,3).
