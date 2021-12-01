@@ -35,13 +35,13 @@ veiculo(carro,1,100,25).
 
 % ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
 pedido('0001',paulo,20,pao,9,25,'abril',2021,72).
-pedido('0002',paulo,20,pao,9,25,'abril',2021,3). % Este pedido nao foi entregue
-pedido('0003',paulo,20,pc,9,25,'abril',2021,3).
-pedido('0004',paulo,20,fones,9,24,'março',2021,3).
-pedido('0005',paulo,20,fones,9,25,'março',2021,3).
-pedido('0006',toze,20,pc,9,21,'março',2021,3).
-pedido('0007',toze,20,fones,9,26,'março',2021,3).
-pedido('0008',toze,20,pao,9,25,'abril',2021,3).
+pedido('0002',paulo,20,pao,9,25,'abril',2021,72). % Este pedido nao foi entregue
+pedido('0003',paulo,20,pc,9,25,'abril',2021,72).
+pedido('0004',paulo,20,fones,9,24,'março',2021,72).
+pedido('0005',paulo,20,fones,9,25,'março',2021,72).
+pedido('0006',toze,20,pc,9,21,'março',2021,72).
+pedido('0007',toze,20,fones,9,26,'março',2021,4).
+pedido('0008',toze,20,pao,9,25,'abril',2021,72).
 
 % entrega(daniela,toze,5,20,15,carro,pc,25,'abril',2021,3).
 
@@ -52,7 +52,7 @@ entrega('0004',joao,paulo,mota,fones,10,27,'março',2021,1).
 entrega('0005',joao,paulo,bicicleta,fones,10,27,'março',2021,4).
 entrega('0006',pinto,toze,carro,pc,10,27,'março',2021,1).
 entrega('0007',pinto,toze,mota,fones,10,27,'março',2021,0).
-entrega('0008',pinto,toze,pao,bicicleta,10,27,'abril',2021,5).
+entrega('0008',pinto,toze,bicicleta,pao,10,27,'abril',2021,5).
 
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
@@ -63,16 +63,6 @@ entrega('0008',pinto,toze,pao,bicicleta,10,27,'abril',2021,5).
 %-----------------------------------------------------------------------------------
 
 tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + DiasMes*30 + Ano * 365) * 24.
-
-foiEntregue(ID1) :- 
-	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
-    entrega(ID1,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
-    tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para dias
-    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para dias
-    PrazoFinal is Tempo2 -Tempo1,
-    write(Prazo),write(' Horas para entregar e entregou ao final de '),write(PrazoFinal),writeln(' horas'),
-    Prazo > PrazoFinal,!.
-    
 
 %Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
 
@@ -94,7 +84,7 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 
 pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,Encomenda,_,Dia,Mes,Ano,_), encomenda(Encomenda,_,Peso).
 
-pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
+quer10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
 
@@ -112,15 +102,54 @@ pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano
 
 % Hora Inicial | Dia Inicial | Mes Inicial | Ano Inicial | Hora Final | Dia Final | Mes Final | Ano Final | Encomendas Entregues a tempo | Enc. Não entregues e entregues fora de tempo
 
-query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
-tempo(HoraI,DiaI,MesI,AnoI,TempoI),
-tempo(HorasF,DiaF,MesF,AnoF,TempoF).
+% query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
+% tempo(HoraI,DiaI,MesI,AnoI,TempoI),
+% tempo(HorasF,DiaF,MesF,AnoF,TempoF).
+
+
+query9(Dia,Mes,Ano,Offset,Total) :- 
+    findall(X,query9NOTaux(Dia,Mes,Ano,Offset,X),List1),
+    length(List1,N1),
+    write('Não foram entregues '),write(N1),writeln(' encomendas'),
+    findall(Y,query9aux(Dia,Mes,Ano,Offset,Y),List2),
+    length(List2,N2),
+    write('Foram entregues '),write(N2),writeln(' encomendas'),
+    Total is N1+N2.
+
+dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset) :-
+    tempo(0,Dia1,Mes1,Ano1,Tempo1),
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
+    Dif is Tempo2-Tempo1,
+    Dif >= 0, Offset * 24 > Dif.
+
+query9aux(Dia1,Mes1,Ano1,Offset,ID) :- 
+    pedido(ID,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset),
+    foiEntregue(ID).
+
+query9NOTaux(Dia1,Mes1,Ano1,Offset,ID) :- 
+    pedido(ID,_,_,_,Horas2,Dia2,Mes2,Ano2,_),    
+    dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset),
+    \+foiEntregue(ID).
+
+    % (foiEntregue(ID) -> writeln('Fui entregue :)');
+    % writeln('NAO FUI ENTREGUE :(')).
+
+
+
+foiEntregue(ID1) :- 
+	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
+    entrega(ID1,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para horas
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para horas
+    PrazoFinal is Tempo2 -Tempo1,
+    Prazo > PrazoFinal.
 
 %TODO
-entregues(Dia,Mes,Ano,Offset,N) :- 
-    foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
-    write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
-    N is 1.
+% entregues(Dia,Mes,Ano,Offset,N) :- 
+%     foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
+%     write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
+%     N is 1.
 
 
 
@@ -198,7 +227,7 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
 %------------------------------------------------------------------------------
 
 
-classificMedia(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
+query6(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
 
 ratingEstafeta(Estafeta,Rating) :- entrega(_,Estafeta,_,_,_,_,_,_,_,Rating).
 
@@ -222,7 +251,7 @@ somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
 %------------------------------------------------------------------------------
 
 %Este processo tem tempo O(N^2 / 2), mas encontra a rua mais comum
-ruaCommon(RuaFinal) :- 
+query5(RuaFinal) :- 
 	findall(X,ruaEntregasCliente(X),[Head | Tail]),
 	ruasRec(Tail,Head,1,NumberVisited,RuaFinal),
     write('A rua mais comum é a '),write(RuaFinal),write(' que foi visitada '),write(NumberVisited),writeln(' vezes').
@@ -260,7 +289,7 @@ numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :-
 %------------------------------------------------------------------------
 %------------------------------------------------------------------------
 
-faturacao(Dia,Mes,Ano,Faturacao) :- findall(X,faturacaoAux(Dia,Mes,Ano,X),List), sumlist(List,Faturacao).
+query4(Dia,Mes,Ano,Faturacao) :- findall(X,faturacaoAux(Dia,Mes,Ano,X),List), sumlist(List,Faturacao).
 
 faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_),encomenda(Encomenda,Faturacao,_).
 
@@ -277,7 +306,7 @@ faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_
 %------------------------------------------------------------------------
 
 
-listaCliente(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
+query3(Estafeta,List) :- setof(X,qualCliente(Estafeta,X),List).
 qualCliente(Estafeta, Cliente) :- entrega(_,Estafeta,Cliente,_,_,_,_,_,_,_).
 
 %-------------------------------------------------------------------------------------------
@@ -290,7 +319,7 @@ qualCliente(Estafeta, Cliente) :- entrega(_,Estafeta,Cliente,_,_,_,_,_,_,_).
 %-------------------------------------------------------------------------------------------
 %-------------------------------------------------------------------------------------------
 
-listaEstafetas(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
+query2(Cliente,Encomenda, List) :- setof(X,qualEstafeta(Cliente,Encomenda,X),List).
 
 qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(_,Estafeta,Cliente,Encomenda,_,_,_,_,_,_).
 
@@ -304,7 +333,7 @@ qualEstafeta(Cliente,Encomenda, Estafeta) :-  entrega(_,Estafeta,Cliente,Encomen
 %--------------------------------------------------------------------------------------
 %--------------------------------------------------------------------------------------
 
-mostEco(Estafeta) :- findall(X,estafeta(X),[H | T]),  mostEcoAux(T,H,Estafeta).
+query1(Estafeta) :- findall(X,estafeta(X),[H | T]),  mostEcoAux(T,H,Estafeta).
 
 mostEcoAux( [] , _ ).
 mostEcoAux( [X|Xs] , Final) :-
