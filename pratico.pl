@@ -37,13 +37,13 @@ data('data1',25,'abril',2021,19,0).
 % ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
 
 pedido('0001',paulo,20,pao,9,25,'abril',2021,72).
-pedido('0002',paulo,20,pao,9,25,'abril',2021,3). % Este pedido nao foi entregue
-pedido('0003',paulo,20,pc,9,25,'abril',2021,3).
-pedido('0004',paulo,20,fones,9,24,'março',2021,3).
-pedido('0005',paulo,20,fones,9,25,'março',2021,3).
-pedido('0006',toze,20,pc,9,21,'março',2021,3).
-pedido('0007',toze,20,fones,9,26,'março',2021,3).
-pedido('0008',toze,20,pao,9,25,'abril',2021,3).
+pedido('0002',paulo,20,pao,9,25,'abril',2021,72). % Este pedido nao foi entregue
+pedido('0003',paulo,20,pc,9,25,'abril',2021,72).
+pedido('0004',paulo,20,fones,9,24,'março',2021,72).
+pedido('0005',paulo,20,fones,9,25,'março',2021,72).
+pedido('0006',toze,20,pc,9,21,'março',2021,72).
+pedido('0007',toze,20,fones,9,26,'março',2021,4).
+pedido('0008',toze,20,pao,9,25,'abril',2021,72).
 
 % entrega(daniela,toze,5,20,15,carro,pc,25,'abril',2021,3).
 
@@ -53,11 +53,6 @@ entrega('0003',joao,paulo,carro,pc,15,10,27,'abril',2021,3).
 entrega('0004',joao,paulo,mota,fones,15,10,27,'março',2021,1).
 entrega('0005',joao,paulo,bicicleta,15,fones,10,27,'março',2021,4).
 entrega('0006',pinto,toze,carro,pc,15,10,27,'março',2021,1).
-tamanho_lista([],0).
-tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
-
-somar_lista([],0).
-somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
 entrega('0007',pinto,toze,mota,fones,15,10,27,'março',2021,0).
 entrega('0008',pinto,toze,pao,bicicleta,15,10,27,'abril',2021,5).
 
@@ -71,15 +66,7 @@ entrega('0008',pinto,toze,pao,bicicleta,15,10,27,'abril',2021,5).
 
 tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + DiasMes*30 + Ano * 365) * 24.
 
-foiEntregue(ID1) :- 
-	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
-    entrega(ID1,_,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
-    tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para dias
-    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para dias
-    PrazoFinal is Tempo2 -Tempo1,
-    write(Prazo),write(' Horas para entregar e entregou ao final de '),write(PrazoFinal),writeln(' horas'),
-    Prazo > PrazoFinal,!.
-    
+
 
 %Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
 
@@ -118,15 +105,55 @@ pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano
 
 % Hora Inicial | Dia Inicial | Mes Inicial | Ano Inicial | Hora Final | Dia Final | Mes Final | Ano Final | Encomendas Entregues a tempo | Enc. Não entregues e entregues fora de tempo
 
-query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
-tempo(HoraI,DiaI,MesI,AnoI,TempoI),
-tempo(HorasF,DiaF,MesF,AnoF,TempoF).
+% query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
+% tempo(HoraI,DiaI,MesI,AnoI,TempoI),
+% tempo(HorasF,DiaF,MesF,AnoF,TempoF).
+
+auxquery9(Num) :- findall(X,foiEntregue(X),List),length(List,Num).
+
+query9tentativa(Dia,Mes,Ano,Offset,Total) :- 
+    findall(X,query9NOTaux(Dia,Mes,Ano,Offset,X),List1),
+    length(List1,N1),
+    write('Não foram entregues '),write(N1),writeln(' encomendas'),
+    findall(Y,query9aux(Dia,Mes,Ano,Offset,Y),List2),
+    length(List2,N2),
+    write('Foram entregues '),write(N2),writeln(' encomendas'),
+    Total is N1+N2.
+
+dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset) :-
+    tempo(0,Dia1,Mes1,Ano1,Tempo1),
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
+    Dif is Tempo2-Tempo1,
+    Dif >= 0, Offset * 24 > Dif.
+
+query9aux(Dia1,Mes1,Ano1,Offset,ID) :- 
+    pedido(ID,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset),
+    foiEntregue(ID).
+
+query9NOTaux(Dia1,Mes1,Ano1,Offset,ID) :- 
+    pedido(ID,_,_,_,Horas2,Dia2,Mes2,Ano2,Prazo),    
+    dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset),
+    \+foiEntregue(ID).
+
+    % (foiEntregue(ID) -> writeln('Fui entregue :)');
+    % writeln('NAO FUI ENTREGUE :(')).
+
+
+
+foiEntregue(ID1) :- 
+	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
+    entrega(ID1,_,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para horas
+    tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para horas
+    PrazoFinal is Tempo2 -Tempo1,
+    Prazo > PrazoFinal.
 
 %TODO
-entregues(Dia,Mes,Ano,Offset,N) :- 
-    foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
-    write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
-    N is 1.
+% entregues(Dia,Mes,Ano,Offset,N) :- 
+%     foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
+%     write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
+%     N is 1.
 
 
 
