@@ -6,11 +6,11 @@ estafeta(daniela).
 cliente(paulo,'rua dos clerigos').
 cliente(toze,'rua das maças').
 
-% Nome | Preco
-encomenda(armario,100).
-encomenda(pao,1).
-encomenda(pc,3000).
-encomenda(fones,50).
+% Nome | Preco | Peso
+encomenda(armario,100,50).
+encomenda(pao,1,1).
+encomenda(pc,3000,5).
+encomenda(fones,50,3).
 
 mes('janeiro',1).
 mes('fevereiro',2).
@@ -47,19 +47,14 @@ pedido('0008',toze,20,pao,9,25,'abril',2021,3).
 
 % entrega(daniela,toze,5,20,15,carro,pc,25,'abril',2021,3).
 
-% idPedido | Estafeta | Cliente | Veiculo | Encomenda  | Peso |  Hora | Dia | Mes | Ano | Rating
-entrega('0001',joao,paulo,mota,pao,15,10,26,'abril',2021,5).
-entrega('0003',joao,paulo,carro,pc,15,10,27,'abril',2021,3).
-entrega('0004',joao,paulo,mota,fones,15,10,27,'março',2021,1).
-entrega('0005',joao,paulo,bicicleta,15,fones,10,27,'março',2021,4).
-entrega('0006',pinto,toze,carro,pc,15,10,27,'março',2021,1).
-tamanho_lista([],0).
-tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
-
-somar_lista([],0).
-somar_lista([H|T],S) :- somar_lista(T,S1), (S is S1+H).
-entrega('0007',pinto,toze,mota,fones,15,10,27,'março',2021,0).
-entrega('0008',pinto,toze,pao,bicicleta,15,10,27,'abril',2021,5).
+% idPedido | Estafeta | Cliente | Veiculo | Encomenda |  Hora | Dia | Mes | Ano | Rating
+entrega('0001',joao,paulo,mota,pao,10,26,'abril',2021,5).
+entrega('0003',joao,paulo,carro,pc,10,27,'abril',2021,3).
+entrega('0004',joao,paulo,mota,fones,10,27,'março',2021,1).
+entrega('0005',joao,paulo,bicicleta,fones,10,27,'março',2021,4).
+entrega('0006',pinto,toze,carro,pc,10,27,'março',2021,1).
+entrega('0007',pinto,toze,mota,fones,10,27,'março',2021,0).
+entrega('0008',pinto,toze,pao,bicicleta,10,27,'abril',2021,5).
 
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
@@ -73,7 +68,7 @@ tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + Dias
 
 foiEntregue(ID1) :- 
 	pedido(ID1,_,_,_,Horas1,Dia1,Mes1,Ano1,Prazo),
-    entrega(ID1,_,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    entrega(ID1,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
     tempo(Horas1,Dia1,Mes1,Ano1,Tempo1), % converte para dias
     tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para dias
     PrazoFinal is Tempo2 -Tempo1,
@@ -154,7 +149,7 @@ entregasTotalEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Num) :-
 	write(Estafeta),write(' realizou '),write(Num),writeln(' entregas').
 
 dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data) :- 
-    entrega(_,Estafeta,_,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
+    entrega(_,Estafeta,_,_,_,Horas2,Dia2,Mes2,Ano2,_),
     tempo(0,Dia1,Mes1,Ano1,Tempo1),
     tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
     Dif is Tempo2-Tempo1,
@@ -185,7 +180,7 @@ allEntregasVeiculo(Dia,Mes,Ano,Offset,Veiculo,Number) :-
     write('De '),write(Veiculo),write(' foram feitas estas entregas '),writeln(Number).
 
 dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
-	entrega(_,_,_,Veiculo,_,_,Horas2,Dia2,Mes2,Ano2,_),
+	entrega(_,_,_,Veiculo,_,Horas2,Dia2,Mes2,Ano2,_),
     tempo(0,Dia1,Mes1,Ano1,Tempo1),
     tempo(Horas2,Dia2,Mes2,Ano2,Tempo2),
     Dif is Tempo2-Tempo1,
@@ -206,7 +201,7 @@ dataEntregaVeiculo(Dia1,Mes1,Ano1,Veiculo,Offset,Data) :-
 
 classificMedia(Estafeta,Media) :- findall(X,ratingEstafeta(Estafeta,X),List), tamanho_lista(List,T), somar_lista(List,R), Media is R/T.
 
-ratingEstafeta(Estafeta,Rating) :- entrega(_,Estafeta,_,_,_,_,_,_,_,_,Rating).
+ratingEstafeta(Estafeta,Rating) :- entrega(_,Estafeta,_,_,_,_,_,_,_,Rating).
 
 tamanho_lista([],0).
 tamanho_lista([_|T],N) :- tamanho_lista(T,N1), N is N1+1.
@@ -242,7 +237,7 @@ ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :-
     ).
 
 
-ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,_,_,_).
+ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,_,_).
 
 
 %Retorna o numero de vezes que aparece um determinado elemento em uma lista
@@ -268,7 +263,7 @@ numberCommom([Head | Tail],Common,NumberInicial, NumberFinal) :-
 
 faturacao(Dia,Mes,Ano,Faturacao) :- findall(X,faturacaoAux(Dia,Mes,Ano,X),List), sumlist(List,Faturacao).
 
-faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_),encomenda(Encomenda,Faturacao).
+faturacaoAux(Dia,Mes,Ano,Faturacao) :- entrega(_,_,_,_,Encomenda,_,Dia,Mes,Ano,_),encomenda(Encomenda,Faturacao,_).
 
 
 
@@ -336,6 +331,6 @@ ecologicoNivel(Estafeta,Nivel) :-
     Nivel is Tamanho / TamLista).
 
 ecologicoEstafeta(Estafeta,Rating) :-
-    entrega(_,Estafeta,_,Veiculo,_,_,_,_,_,_,_),
+    entrega(_,Estafeta,_,Veiculo,_,_,_,_,_,_),
     veiculo(Veiculo,Rating,_,_).
                             
