@@ -265,7 +265,7 @@ ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :-
     ).
 
 
-ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,_,_).
+ruaEntregasCliente(Rua) :- cliente(Cliente,Rua), entrega(_,_,Cliente,_,_,_,_,_,_,_).
 
 
 %Retorna o numero de vezes que aparece um determinado elemento em uma lista
