@@ -32,7 +32,6 @@ veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
 veiculo(carro,1,100,25).
 
-data('data1',25,'abril',2021,19,0).
 
 % ID_pedido | Cliente | Distancia | Encomenda | Hora | Dia | Mes | Ano | Horas para Entregar
 
@@ -80,7 +79,7 @@ foiEntregue(ID1) :-
 
 precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- 
 	veiculo(Veiculo,Rating,_,_),
-    encomenda(Encomenda,PrecoEncomenda),
+    encomenda(Encomenda,PrecoEncomenda,_),
     Preco is PrecoEncomenda + Rating * Distancia. 
 
 %------------------------------------------------------------------------------
@@ -94,7 +93,8 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,_,Peso,_,Dia,Mes,Ano,_).
+pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,Encomenda,_,Dia,Mes,Ano,_), encomenda(Encomenda,_,Peso).
+
 pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
