@@ -115,6 +115,13 @@ pesoTotal(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano
 %
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
+
+% Hora Inicial | Dia Inicial | Mes Inicial | Ano Inicial | Hora Final | Dia Final | Mes Final | Ano Final | Encomendas Entregues a tempo | Enc. Não entregues e entregues fora de tempo
+
+query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
+tempo(HoraI,DiaI,MesI,AnoI,TempoI),
+tempo(HorasF,DiaF,MesF,AnoF,TempoF).
+
 %TODO
 entregues(Dia,Mes,Ano,Offset,N) :- 
     foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
