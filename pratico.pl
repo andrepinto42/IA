@@ -26,7 +26,6 @@ mes('novembro',11).
 mes('dezembro',12).
 
 
-
 %Nome | Rating | Peso Maximo | Velocidade Media
 veiculo(bicicleta,3,5,10).
 veiculo(mota,2,20,35).
@@ -61,10 +60,9 @@ entrega('0008',pinto,toze,bicicleta,pao,10,27,'abril',2021,5).
 %
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
+%tempo em horas
 
 tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + DiasMes*30 + Ano * 365) * 24.
-
-%Preco = PrecoEncomenda + Veiculo * Distancia + (DataFim -DataInicio).
 
 precoEntrega(Encomenda, Veiculo,Distancia, Preco) :- 
 	veiculo(Veiculo,Rating,_,_),
@@ -84,7 +82,7 @@ precoEntrega(Encomenda, Veiculo,Distancia, Preco) :-
 
 pesoEstafeta(Estafeta,Dia,Mes,Ano,Peso) :- entrega(_,Estafeta,_,_,Encomenda,_,Dia,Mes,Ano,_), encomenda(Encomenda,_,Peso).
 
-query10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
+quer10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X),List), somar_lista(List,P).
 
 
 
@@ -101,10 +99,6 @@ query10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X
 %------------------------------------------------------------------------------
 
 % Hora Inicial | Dia Inicial | Mes Inicial | Ano Inicial | Hora Final | Dia Final | Mes Final | Ano Final | Encomendas Entregues a tempo | Enc. Não entregues e entregues fora de tempo
-
-% query9(HoraI, DiaI, MesI, AnoI, HoraF, DiaF, MesF, AnoF, TotalEntregues, TotalnEntregues) :-
-% tempo(HoraI,DiaI,MesI,AnoI,TempoI),
-% tempo(HorasF,DiaF,MesF,AnoF,TempoF).
 
 
 query9(Dia,Mes,Ano,Offset,Total) :- 
@@ -144,12 +138,6 @@ foiEntregue(ID1) :-
     tempo(Horas2,Dia2,Mes2,Ano2,Tempo2), % converte para horas
     PrazoFinal is Tempo2 -Tempo1,
     Prazo > PrazoFinal.
-
-%TODO
-% entregues(Dia,Mes,Ano,Offset,N) :- 
-%     foiEntregue(Estafeta,Cliente,Encomenda,Dia,Mes,Ano),
-%     write(Tempo1),write(' tempo1 e tempo2 = '),writeln(Tempo2),
-%     N is 1.
 
 
 
@@ -195,7 +183,7 @@ dataEntregaEstafeta(Dia1,Mes1,Ano1,Offset,Estafeta,Data) :-
 %------------------------------------------------------------------------------
 
 %SO funciona para um offset de Dias
-% sumEntregas(List,Num)
+
 
 query7(Dia,Mes,Ano,Offset,N) :- findall(X,allEntregas(Dia,Mes,Ano,Offset,X),List ), sumlist(List,N).
 
@@ -265,7 +253,7 @@ ruasRec([Head | Tail],Elem,Number,X,RuaFinal) :-
     ).
 
 
-ruaEntregasCliente(Rua) :- cliente(Cliente,Rua), entrega(_,_,Cliente,_,_,_,_,_,_,_).
+ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,_,_).
 
 
 %Retorna o numero de vezes que aparece um determinado elemento em uma lista
