@@ -60,7 +60,6 @@ entrega('0008',pinto,toze,bicicleta,pao,10,27,'abril',2021,5).
 %
 %-----------------------------------------------------------------------------------
 %-----------------------------------------------------------------------------------
-%tempo em horas
 
 tempo(Horas,Dia,Mes,Ano,Tempo) :- mes(Mes,DiasMes), Tempo is Horas + (Dia + DiasMes*30 + Ano * 365) * 24.
 
@@ -98,8 +97,6 @@ quer10(Estafeta,Dia,Mes,Ano,P) :- findall(X,pesoEstafeta(Estafeta,Dia,Mes,Ano,X)
 %------------------------------------------------------------------------------
 %------------------------------------------------------------------------------
 
-% Hora Inicial | Dia Inicial | Mes Inicial | Ano Inicial | Hora Final | Dia Final | Mes Final | Ano Final | Encomendas Entregues a tempo | Enc. Não entregues e entregues fora de tempo
-
 
 query9(Dia,Mes,Ano,Offset,Total) :- 
     findall(X,query9NOTaux(Dia,Mes,Ano,Offset,X),List1),
@@ -125,10 +122,6 @@ query9NOTaux(Dia1,Mes1,Ano1,Offset,ID) :-
     pedido(ID,_,_,_,Horas2,Dia2,Mes2,Ano2,_),    
     dentroTempo(Dia1,Mes1,Ano1,Horas2,Dia2,Mes2,Ano2,Offset),
     \+foiEntregue(ID).
-
-    % (foiEntregue(ID) -> writeln('Fui entregue :)');
-    % writeln('NAO FUI ENTREGUE :(')).
-
 
 
 foiEntregue(ID1) :- 
@@ -257,7 +250,6 @@ ruaEntregasCliente(Rua) :- cliente(Cliente,Rua) , entrega(_,_,_,Cliente,_,_,_,_,
 
 
 %Retorna o numero de vezes que aparece um determinado elemento em uma lista
-
 common(Elem,List,X) :- common([Elem | List],X).
 common([Head | Tail],X) :- numberCommom(Tail,Head,1,X).
 
