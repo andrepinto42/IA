@@ -18,7 +18,7 @@ public class DepthFirst {
     static boolean canStop;
     static boolean keepLooking;
     
-    static void DFSUtil(Rua r1,Rua r2,Map<Rua,Boolean> visited)
+    private static void DFSUtil(Rua r1,Rua r2,Map<Rua,Boolean> visited)
     {
         visited.put(r1,true);
         pathRuas.add(r1);
@@ -64,6 +64,7 @@ public class DepthFirst {
     {
         //Se a rua destino for nula o programa nao pode parar
         canStop = !(r2 == null);
+
         keepLooking = true;
 
         pathway = new Stack<Rua>();
@@ -88,6 +89,8 @@ public class DepthFirst {
         System.out.println("DISTANCIA TOTAL = " + path.cost);
         return path;
     }
+
+
 
     private static float GetCost(Stack<Rua> pathway,Grafo g)
     {

@@ -11,10 +11,21 @@ import BaseDados.Nodo.Rua;
 import Grafos.Grafo;
 import Grafos.Path;
 
+class Pai{
+    public Rua ruaPai;
+    public float cost;
+    public Pai(Rua r, float cost1)
+    {
+        ruaPai = r;
+        cost = cost1;
+    }
+}
+
+
 public class BreadthFirst {
     static Rua stoppingRua;
 
-    static Stack<Rua> pathway;
+    static Map<Rua,Pai> pathway;
 
     public static Path BFS(Grafo g)
     {
@@ -52,6 +63,20 @@ public class BreadthFirst {
         queue.add(r1);
         path.allRuasTravelled.add(r1);
 
+        //Inicializar a pathway com a rua a começar sendo a rua que não tem Pai
+        pathway = new HashMap<Rua,Pai>();
+        pathway.put(r1,null);
+
+        Search(g, r2, enableStoping, path, visited, queue);
+        if (enableStoping)
+            path.cost = GetCost(r1,r2);
+        
+        return path;
+    }
+
+    private static void Search(Grafo g, Rua r2, boolean enableStoping, Path path, Map<Rua, Boolean> visited,LinkedList<Rua> queue) 
+    {
+        Rua r1;
         while (queue.size() != 0)
         {
             // Dequeue a vertex from queue and print it
@@ -68,19 +93,37 @@ public class BreadthFirst {
             for (var next : g.caminhos.get(r1).entrySet()) {  
                 
                 Rua nextRua = next.getKey();
+                float nextCost = next.getValue();
                 
                 //Still not visited this path
                 if ( ! visited.get(nextRua) )
                 {
-                    path.cost += next.getValue();
-                    System.out.print("from " + r1.ruaNome + "-> " + nextRua.ruaNome + " " + next.getValue() + "$\n");
+                    System.out.print("from " + r1.ruaNome + "-> " + nextRua.ruaNome + " " + nextCost + "$\n");
                     visited.put(nextRua,true);
                     queue.add(nextRua);
                     path.allRuasTravelled.add(nextRua);
+                    
+                    path.cost += nextCost;
+
+                    pathway.put(nextRua,new Pai(r1,nextCost));
                 }
             }
         }
-        return path;
+    }
+
+
+    private static float GetCost(Rua r1,Rua r2) {
+        if (pathway == null || pathway.size() == 0) return -1f;
+
+        float cost = 0f;
+        while(! r2.equals(r1))
+        {
+            System.out.println(r2.ruaNome);
+            cost += pathway.get(r2).cost;
+            r2 = pathway.get(r2).ruaPai;
+        }
+
+        return cost;
     }
 
 }
