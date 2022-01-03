@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import BaseDados.Nodo.Rua;
 import Grafos.Grafo;
@@ -12,6 +13,8 @@ import Grafos.Path;
 
 public class BreadthFirst {
     static Rua stoppingRua;
+
+    static Stack<Rua> pathway;
 
     public static Path BFS(Grafo g)
     {
@@ -24,14 +27,14 @@ public class BreadthFirst {
 
     public static Path BFS(Grafo g,Rua r1,Rua r2)
     {
-        boolean enableStoping = false;
+        boolean enableStoping = true;
         if (r2 == null)
-            enableStoping = true;
+            enableStoping = false;
         
         Path path = new Path();
         path.cost = 0f;
 
-        // System.out.println("\n----BFS ALGORITHM-----\n");
+        System.out.println("\n----BFS ALGORITHM-----\n");
 
         // Mark all the vertices as not visited(By default
         // set as false)
@@ -43,7 +46,7 @@ public class BreadthFirst {
         // Create a queue for BFS
         LinkedList<Rua> queue = new LinkedList<Rua>();
  
-        // System.out.println("Starting at " + r1.ruaNome);
+        System.out.println("Starting at " + r1.ruaNome);
         // Mark the current node as visited and enqueue it
         visited.put(r1, true);
         queue.add(r1);
@@ -63,14 +66,17 @@ public class BreadthFirst {
             // If a adjacent has not been visited, then mark it
             // visited and enqueue it
             for (var next : g.caminhos.get(r1).entrySet()) {  
+                
+                Rua nextRua = next.getKey();
+                
                 //Still not visited this path
-                if ( ! visited.get(next.getKey()) )
+                if ( ! visited.get(nextRua) )
                 {
                     path.cost += next.getValue();
-                    // System.out.print("-> " + next.getKey().ruaNome + " " + next.getValue() + "$\n");
-                    visited.put(next.getKey(),true);
-                    queue.add(next.getKey());
-                    path.allRuasTravelled.add(next.getKey());
+                    System.out.print("from " + r1.ruaNome + "-> " + nextRua.ruaNome + " " + next.getValue() + "$\n");
+                    visited.put(nextRua,true);
+                    queue.add(nextRua);
+                    path.allRuasTravelled.add(nextRua);
                 }
             }
         }

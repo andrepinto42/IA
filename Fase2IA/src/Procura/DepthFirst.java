@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.Stack;
 
 import BaseDados.Nodo.Rua;
 import Grafos.Grafo;
@@ -12,7 +14,7 @@ import Grafos.Path;
 public class DepthFirst {
     static Grafo g;
     static List<Rua> pathRuas;
-    static float cost;
+    static Stack<Rua> pathway;
     static boolean canStop;
     static boolean keepLooking;
     
@@ -20,7 +22,7 @@ public class DepthFirst {
     {
         visited.put(r1,true);
         pathRuas.add(r1);
-         
+   
         // Recur for all the vertices adjacent to this vertex
         Map<Rua,Float> newSearch =  g.caminhos.get(r1);
         
@@ -34,14 +36,16 @@ public class DepthFirst {
             Rua next = entry.getKey();
             Float costNext = entry.getValue();
             
-         
             if (keepLooking && !visited.get(next))
             {
-                cost += costNext;
-                // System.out.print(" -> " + next.ruaNome + " " +costNext + "$\n");
+                pathway.push(next);
+                System.out.print("From " + r1.ruaNome + " -> " + next.ruaNome + " " +costNext + "$\n");
                 DFSUtil(next,r2,visited);    
             }
         }
+        if (keepLooking)
+            pathway.pop();
+        
     }
 
     public static Path DFS(Grafo graph)
@@ -62,9 +66,9 @@ public class DepthFirst {
         canStop = !(r2 == null);
         keepLooking = true;
 
+        pathway = new Stack<Rua>();
         Path path = new Path();
         pathRuas = new ArrayList<Rua>();
-        cost = 0f;
         g = graph;
         
         // Mark all the vertices as not visited
@@ -74,12 +78,28 @@ public class DepthFirst {
             visited.put(novo, false);
         }
  
-        // System.out.println("\n----DFS ALGORITHM-----\n");
-        // System.out.println("Starting in " + r.ruaNome);
+        System.out.println("\n----DFS ALGORITHM-----\n");
+        System.out.println("Starting in " + r1.ruaNome);
+        
         DFSUtil(r1,r2, visited);
 
-        path.cost = cost;
         path.allRuasTravelled = pathRuas;
+        path.cost = GetCost(pathway,g);
+        System.out.println("DISTANCIA TOTAL = " + path.cost);
         return path;
+    }
+
+    private static float GetCost(Stack<Rua> pathway,Grafo g)
+    {
+        float cost = 0f;
+        Rua startingRua = g.mainRua;
+
+        for (Rua rua : pathway) {
+            cost += g.caminhos.get(startingRua).get(rua);
+            startingRua = rua;
+            System.out.println(rua.ruaNome);
+        }
+        System.out.println(cost);
+        return cost;
     }
 }
