@@ -18,10 +18,11 @@ public class SolverEncomendas {
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();
             var path1 = DepthFirst.DFS(g,g.mainRua ,ruaParaEntregar);
-            path1.Print();
+            
+            // path1.Print();
+            
             var path2 = BreadthFirst.BFS(g, g.mainRua, ruaParaEntregar);
-            path2.Print();
-
+            // path2.Print();
             System.out.print("The best path is ");
             if (path1.cost > path2.cost)
             System.out.println("BFS");
