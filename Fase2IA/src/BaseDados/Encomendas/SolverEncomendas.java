@@ -16,7 +16,7 @@ import Grafos.Grafo;
 import Procura.BreadthFirst;
 import Procura.DepthFirst;
 
-import static jdk.nashorn.internal.parser.DateParser.HOUR;
+//import static jdk.nashorn.internal.parser.DateParser.HOUR;
 
 public class SolverEncomendas {
     
@@ -25,28 +25,34 @@ public class SolverEncomendas {
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();
             var path1 = DepthFirst.DFS(g,g.mainRua ,ruaParaEntregar);
-            
             // path1.Print();
-            
             var path2 = BreadthFirst.BFS(g, g.mainRua, ruaParaEntregar);
             // path2.Print();
+
+            if(pedido.produto.getKg()>100) {
+                System.out.print("A encomenda ultrapassou o limite de peso!");
+                return;
+            }
+
             System.out.print("The best path is ");
             if (path1.cost > path2.cost){
 
                 System.out.println("BFS");
 
-                var e1 = melhorEstafeta(pedido, allEstafetas,path1.cost);
-                if(e1!=null) System.out.println(e1.nome + " is going there");
+                var e1 = melhorEstafeta(pedido, allEstafetas, path1.cost);
+                if(e1!=null) {
+                    System.out.println("Encomenda: " + pedido.produto.getNomeProduto() + "Cliente: " + pedido.cliente.getNome() + "\n");
+                    System.out.println("Estafeta: " + e1.nome + "Veiculo: "+ e1.veiculo + "\n");
+                }
             }
-
-
-
             else{
                 System.out.println("DFS");
 
-                var e1 = melhorEstafeta(pedido, allEstafetas,path2.cost);
-                if(e1!=null) System.out.println(e1.nome + " is going there");
-
+                var e1 = melhorEstafeta(pedido, allEstafetas, path2.cost);
+                if(e1!=null) {
+                    System.out.println("Encomenda: " + pedido.produto.getNomeProduto() + "Cliente: " + pedido.cliente.getNome() + "\n");
+                    System.out.println("Estafeta: " + e1.nome + "Veiculo: "+ e1.veiculo + "\n");
+                }
             }
         }
     }
@@ -55,40 +61,36 @@ public class SolverEncomendas {
 
         int kg1 = p.produto.getKg();
 
-        double v1 = (kg1*0.7*10);//bicicleta
-        double v2 = (kg1*0.5*35);//mota
-        double v3 = (kg1*0.1*25);//carro
+        double v1 = (10-(kg1*0.7));//bicicleta
+        double v2 = (35-(kg1*0.5));//mota
+        double v3 = (25-(kg1*0.1));//carro
 
         //Date newDate = new Date((long) (p.dataInicial.getTime() + p.horasParaEntregar * HOUR));
 
-        double max = DoubleStream.of(v1, v2, v3)
+        /*double max = DoubleStream.of(v1, v2, v3)
                 .max()
-                .getAsDouble();
+                .getAsDouble();*/
 
-        double tempo = 0.0;
+        double tempo1 = dist/v1;
+        double tempo2 = dist/v2;
+        double tempo3 = dist/v3;
+
         Estafeta e1 = null;
 
         for(Estafeta e : map.values()){
 
-            if((max==v1) && e.veiculo instanceof Bicicleta){
-                System.out.printf("O melhor transporte é bicicleta");
-                tempo = dist/v1;
-                e1=e;
-                break;
+            if(tempo1<p.horasParaEntregar && kg1<=5){
+                if(e.veiculo instanceof Bicicleta) return e;
 
-            }else if((max==v2) && e.veiculo instanceof Mota){
-                System.out.printf("O melhor transporte é mota");
-                tempo = dist/v2;
-                e1=e;
-                break;
+            }else if(tempo2<p.horasParaEntregar && kg1<=20){
+                if(e.veiculo instanceof Mota) return e;
 
-            }else if((max==v3) && e.veiculo instanceof Carro){
-                System.out.printf("O melhor transporte é o carro");
-                tempo = dist/v3;
-                e1=e;
-                break;
+            }else if(tempo3<p.horasParaEntregar && kg1<=100){
+                if(e.veiculo instanceof Carro) return e;
+
             }
         }
+
         return e1;
     }
 
