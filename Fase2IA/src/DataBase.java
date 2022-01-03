@@ -1,8 +1,5 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import BaseDados.Encomendas.Pedido;
 import BaseDados.Nodo.Rua;
@@ -69,7 +66,7 @@ public class DataBase {
         Rua r1 = g.getAllRuas().get(3);
 
         Cliente c1 = new Cliente("Tomas",r1);
-        Pedido p1 = new Pedido(c1, "pc",100f, LocalDate.now(), 3f);
+        Pedido p1 = new Pedido(c1, "pc",100f,5, new Date(), 3f);
         
         List<Pedido> lista = new ArrayList<Pedido>();
         lista.add(p1);
