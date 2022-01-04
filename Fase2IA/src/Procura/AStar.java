@@ -1,5 +1,6 @@
 package Procura;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,8 @@ public class AStar {
 
         Map<Rua,Pai> pathway = new HashMap<Rua,Pai>();
 
+        List<Rua> allRuasTravelled = new ArrayList<Rua>();
+        
         float shortestDistance = Float.MAX_VALUE;
         Path p = new Path();
         
@@ -40,6 +43,8 @@ public class AStar {
             //Tirar o Nodo com o menor custo do Open set
             Rua minimalRua = GetMinimum(openSet);
             next = minimalRua;
+
+            allRuasTravelled.add(minimalRua);
             
             System.out.println("\nAStar is looking at " + next.ruaNome);
             if (next.equals(r2))
@@ -86,8 +91,9 @@ public class AStar {
             closedSet.add(minimalRua);
             p.allRuasTravelled.add(minimalRua);
         }
-        p.cost = GetCost(pathway, r1, r2);
-
+        
+        p = GetCost(pathway, r1, r2);
+        p.allRuasTravelled = allRuasTravelled;
         return p;
     }
 
@@ -108,8 +114,10 @@ public class AStar {
 
     static Stack<Rua> stackPath = new Stack<Rua>();
     
-    private static float GetCost(Map<Rua,Pai> pathway,Rua r1,Rua r2) {
-        if (pathway == null || pathway.size() == 0) return -1f;
+    private static Path GetCost(Map<Rua,Pai> pathway,Rua r1,Rua r2) {
+        Path p = new Path();
+
+        if (pathway == null || pathway.size() == 0) return p;
 
         float cost = 0f;
         while(! r2.equals(r1))
@@ -120,12 +128,10 @@ public class AStar {
         }
 
         stackPath.push(r1);
+        p.cost = cost;
+        p.pathToTravel = stackPath;
+        
 
-        while(!stackPath.isEmpty())
-        {
-            System.out.print( stackPath.pop().ruaNome + " -> ");
-        }
-        System.out.println(cost);
-        return cost;
+        return p;
     }
 }

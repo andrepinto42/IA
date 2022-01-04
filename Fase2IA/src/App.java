@@ -36,6 +36,7 @@ public class App {
         
         // path = DepthFirst.DFS(g, r1,r2);
 
-        AStar.AStarFind(g, r1, r2);
+        var path = AStar.AStarFind(g, r1, r2);
+        path.Print();
     }
 }
