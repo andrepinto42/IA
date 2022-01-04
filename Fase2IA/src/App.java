@@ -8,6 +8,7 @@ import BaseDados.Pessoa.Estafeta;
 
 import Grafos.Grafo;
 import Grafos.Path;
+import Procura.AStar;
 import Procura.BreadthFirst;
 import Procura.DepthFirst;
 
@@ -30,9 +31,11 @@ public class App {
 
         Rua r1 = g.mainRua;
         Rua r2 = g.getAllRuas().get(5);
-        Path path = BreadthFirst.BFS(g, r1,r2);
+        // Path path = BreadthFirst.BFS(g, r1,r2);
 
         
-        path = DepthFirst.DFS(g, r1,r2);
+        // path = DepthFirst.DFS(g, r1,r2);
+
+        AStar.AStarFind(g, r1, r2);
     }
 }

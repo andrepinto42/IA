@@ -7,19 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
+import BaseDados.Nodo.Pai;
 import BaseDados.Nodo.Rua;
 import Grafos.Grafo;
 import Grafos.Path;
 
-class Pai{
-    public Rua ruaPai;
-    public float cost;
-    public Pai(Rua r, float cost1)
-    {
-        ruaPai = r;
-        cost = cost1;
-    }
-}
 
 
 public class BreadthFirst {

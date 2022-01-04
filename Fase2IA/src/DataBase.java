@@ -1,5 +1,9 @@
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import BaseDados.Encomendas.Pedido;
 import BaseDados.Nodo.Rua;
@@ -20,13 +24,13 @@ public class DataBase {
     }
     public  Grafo BuildGrafo()
     {
-        Rua r0 = new Rua("Green Destribution");
-        Rua r1 = new Rua("rua dos tremoços");
-        Rua r2 = new Rua("rua das macas");
-        Rua r3 = new Rua("rua dos dinossauros");
-        Rua r4 = new Rua("rua de abril");
-        Rua r5 = new Rua("rua do Jose");
-        Rua r6 = new Rua("rua da Africa");
+        Rua r0 = new Rua("Green Destribution",0,0);
+        Rua r1 = new Rua("rua dos tremoços",2,2);
+        Rua r2 = new Rua("rua das macas",-1,2);
+        Rua r3 = new Rua("rua dos dinossauros",0,10);
+        Rua r4 = new Rua("rua de abril",1,9);
+        Rua r5 = new Rua("rua do Jose",-2,3);
+        Rua r6 = new Rua("rua da Africa",2,8);
 
         Grafo g = new Grafo();
 
@@ -48,6 +52,10 @@ public class DataBase {
         g.addEdge(r6, r4,2f);
         g.addEdge(r6, r3,1f);
         g.addEdge(r5, r3,7f);
+
+        //Insirida para testar ASTAR
+        g.addEdge(r1, r3,20f);
+
 
         this.g = g;
 
@@ -79,6 +87,7 @@ public class DataBase {
     {
         if (g == null)
         return null;
+        
         Map<String,Estafeta> map = new  HashMap<String,Estafeta>();
 
         Estafeta e1 = new Estafeta("Pinto","carro");

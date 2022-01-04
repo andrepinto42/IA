@@ -12,7 +12,7 @@ public class Caminho {
     }
     public Caminho(String r1,String r2)
     {
-        rua1 = new Rua(r1);
-        rua2 = new Rua(r2);
+        rua1 = new Rua(r1,0,0);
+        rua2 = new Rua(r2,0,0);
     }
 }

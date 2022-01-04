@@ -10,6 +10,7 @@ import BaseDados.Nodo.Rua;
 
 public class Grafo {
     public Rua mainRua;
+    // Mapa de rua e cada key corresponde a uma lista de proximas ruas
     public Map<Rua,HashMap<Rua,Float>> caminhos = new HashMap<Rua,HashMap<Rua,Float>>();
 
     public Grafo()
