@@ -13,12 +13,14 @@ public class Estafeta {
     
     public String nome;
     public Veiculo veiculo;
+    public Boolean emUso;
  
 
-    public Estafeta(String nome1,Veiculo v1)
+    public Estafeta(String nome1,Veiculo v1,Boolean emUso1)
     {
         nome = nome1;
         veiculo = v1;
+        emUso = emUso1;
     }
 
 
