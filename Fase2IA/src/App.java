@@ -39,7 +39,7 @@ public class App {
             "ITERATIVE",
             "ASTAR",
             "GREEDY",
-            "ALL -> corre todos os algoritmos",
+            "ALL -> corre todos os algoritmos e escolhe melhor",
         };
 
         Menu.ClearScreen();
@@ -56,6 +56,7 @@ public class App {
             Menu.ClearScreen();
             Menu.Print(arr,"Insira outro algoritmo:");
         }
+        sc.close();
     }
 
 }

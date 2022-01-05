@@ -75,6 +75,7 @@ public class DataBase {
         Rua r2 = g.getAllRuas().get(4);
         Rua r3 = g.getAllRuas().get(5);
 
+        System.out.println(r1.ruaNome);
 
         Cliente c1 = new Cliente("Tomas",r1);
         Cliente c2 = new Cliente("Ze",r2);

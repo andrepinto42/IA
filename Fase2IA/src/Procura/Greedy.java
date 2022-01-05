@@ -135,7 +135,9 @@ public class Greedy {
         while(! r2.equals(r1))
         {
             stackPath.push(r2);
-
+            Pai pai = pathway.get(r2);
+            if (pai == null) break;
+            
             cost += pathway.get(r2).cost;
             r2 = pathway.get(r2).ruaPai;
         }

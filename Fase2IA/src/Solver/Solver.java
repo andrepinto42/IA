@@ -42,6 +42,7 @@ public class Solver {
         for (int i = 0; i < listaPedido.size(); i++) {
             Pedido pedidoAtual = listaPedido.get(i);
             Path path = null;
+            
             switch (algorithm) {
                 case "DFS":
                     path = DepthFirst.DFS(g, g.mainRua, pedidoAtual.getRua());
@@ -86,6 +87,12 @@ public class Solver {
 
     private static void HandlePath(Map<String, Estafeta> allEstafetas, Pedido pedidoAtual, Path bestpath) {
         var it= bestpath.pathToTravel.iterator();
+        if (! it.hasNext())
+        {
+            //Nao existe um caminho para percorrer
+            System.out.println("Nao existe um caminho para percorrer");
+            return;
+        }
         Rua last=it.next();
      
         if (last != null)
