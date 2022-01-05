@@ -75,9 +75,13 @@ public class DataBase {
 
         Cliente c1 = new Cliente("Tomas",r1);
         Pedido p1 = new Pedido(c1, "pc",100f,5, new Date(), 3f);
+        Pedido p2 = new Pedido(c1, "pao",2f,1, new Date(), 2f);
+        Pedido p3 = new Pedido(c1, "mesinha de cabeceira",1000f,30, new Date(), 5f);
         
         List<Pedido> lista = new ArrayList<Pedido>();
         lista.add(p1);
+        lista.add(p2);
+        lista.add(p3);
 
         this.allPedidos = lista;
         return lista;

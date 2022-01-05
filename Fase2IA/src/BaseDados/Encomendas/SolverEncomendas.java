@@ -7,6 +7,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
+import javax.lang.model.util.ElementScanner6;
+
 import BaseDados.Nodo.Rua;
 import BaseDados.Pessoa.Estafeta;
 import BaseDados.Veiculo.Bicicleta;
@@ -45,7 +47,7 @@ public class SolverEncomendas {
             if (min == path1.cost){
 
                 System.out.println("DFS");
-                var e1 = melhorEstafeta(pedido, allEstafetas, path1.cost);
+                var e1 = melhorEstafetaEcologico(pedido, allEstafetas, path1.cost);
                 if(e1!=null) {
                     e1.emUso = true;
                     System.out.println("Encomenda: " + pedido.produto.getNomeProduto() + " | Cliente: " + pedido.cliente.getNome() + "\n");
@@ -53,7 +55,7 @@ public class SolverEncomendas {
                 }
             }else if(min == path2.cost){
                 System.out.println("BFS");
-                var e1 = melhorEstafeta(pedido, allEstafetas, path2.cost);
+                var e1 = melhorEstafetaEcologico(pedido, allEstafetas, path2.cost);
                 if(e1!=null) {
                     e1.emUso = true;
                     System.out.println("Encomenda: " + pedido.produto.getNomeProduto() + " | Cliente: " + pedido.cliente.getNome() + "\n");
@@ -61,7 +63,7 @@ public class SolverEncomendas {
                 }
             }else{
                 System.out.println("A*");
-                var e1 = melhorEstafeta(pedido, allEstafetas, path3.cost);
+                var e1 = melhorEstafetaEcologico(pedido, allEstafetas, path3.cost);
                 if(e1!=null) {
                     e1.emUso = true;
                     System.out.println("Encomenda: " + pedido.produto.getNomeProduto() + " | Cliente: " + pedido.cliente.getNome() + "\n");
@@ -82,56 +84,131 @@ public class SolverEncomendas {
         return tempo;
     }
 
-    public static Estafeta melhorEstafeta (Pedido p, Map<String,Estafeta> map, Float dist){
-
-        int kg1 = p.produto.getKg();
-        //Date newDate = new Date((long) (p.dataInicial.getTime() + p.horasParaEntregar * HOUR));
-
-        for(Estafeta e : map.values()){
-            //tenta entregar com o veiculo mais ecologico
-            if(e.veiculo instanceof Bicicleta && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=5) {
-                if (!e.emUso) return e;
+    public static Estafeta melhorEstafetaEcologico(Pedido p, Map<String,Estafeta> map, Float dist){
+        int pesoEncomenda = p.produto.getKg();
+        float horasParaEntregar = p.horasParaEntregar;
+        Estafeta bestEstafeta = null;
+        for (Estafeta e : map.values()) {
+            
+            boolean valid = CheckIfValid(pesoEncomenda, e, dist, horasParaEntregar);
+            
+            if (!valid) continue;
+            float horasAtuaisParaEntregar = GetHoursToDeliver(pesoEncomenda, e, dist);
+            
+            if (horasAtuaisParaEntregar > horasParaEntregar)
+            {
+               //Estafeta nao vai chegar a horas
+                continue;
             }
-
-            else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=20) {
-                if (!e.emUso) return e;
+            if (bestEstafeta == null)
+            {
+                bestEstafeta = e;
+                continue;
             }
+            if (bestEstafeta.veiculo instanceof Bicicleta)
+                continue;
+            
+            if (bestEstafeta.veiculo instanceof Mota && !(e.veiculo instanceof Carro) )
+                bestEstafeta = e;
+            else 
+                bestEstafeta = e;
+            
+        }
+        return bestEstafeta;
+    }
 
-            else if(e.veiculo instanceof Carro && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=100) {
-                if (!e.emUso) return e;
-            }
+    public static Estafeta melhorEstafetaTempo(Pedido p, Map<String,Estafeta> map, Float dist){
 
-            //ultrapassa o tempo, tenta entregar com o veiculo mais rapido (se o peso for aceitavel)
-            else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=20) {
-                if (!e.emUso) {
-                    System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
-                    return e;
-                }
+        int pesoEncomenda = p.produto.getKg();
+        float horasParaEntregar = p.horasParaEntregar;
+        float melhorTempoParaEntrega = 0f;
+        Estafeta bestEstafeta = null;
+        for (Estafeta e : map.values()) {
+
+            boolean valid = CheckIfValid(pesoEncomenda, e, dist, horasParaEntregar);
+            
+            if (!valid) continue;
+            float horasAtuaisParaEntregar = GetHoursToDeliver(pesoEncomenda, e, dist);
+
+            if (bestEstafeta == null)
+            {
+                melhorTempoParaEntrega = horasAtuaisParaEntregar;
+                bestEstafeta = e;
             }
-            else if (e.veiculo instanceof Carro && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=100) {
-                if (!e.emUso) {
-                    System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
-                    return e;
+            else
+            {
+                if (melhorTempoParaEntrega> horasAtuaisParaEntregar)
+                {
+                    melhorTempoParaEntrega = horasAtuaisParaEntregar;
+                    bestEstafeta = e;
                 }
             }
         }
-        return null;
+        return bestEstafeta;
+        
+        // int kg1 = p.produto.getKg();
+        // //Date newDate = new Date((long) (p.dataInicial.getTime() + p.horasParaEntregar * HOUR));
+
+        // for(Estafeta e : map.values()){
+        //     //tenta entregar com o veiculo mais ecologico
+        //     if(e.veiculo instanceof Bicicleta && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=5) {
+        //         if (!e.emUso) return e;
+        //     }
+
+        //     else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=20) {
+        //         if (!e.emUso) return e;
+        //     }
+
+        //     else if(e.veiculo instanceof Carro && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=100) {
+        //         if (!e.emUso) return e;
+        //     }
+
+        //     //ultrapassa o tempo, tenta entregar com o veiculo mais rapido (se o peso for aceitavel)
+        //     else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=20) {
+        //         if (!e.emUso) {
+        //             System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
+        //             return e;
+        //         }
+        //     }
+        //     else if (e.veiculo instanceof Carro && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=100) {
+        //         if (!e.emUso) {
+        //             System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
+        //             return e;
+        //         }
+        //     }
+        // }
+        // return null;
     }
 
     public static void SolveDFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
+        System.out.println("\n-----------------DFS-----------------\n");
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();
             int peso = pedido.produto.getKg();
             var path = DepthFirst.DFS(g,g.mainRua ,ruaParaEntregar);
+            System.out.println("\nInicio:\n");
            
             for (Estafeta e : allEstafetas.values()) {
+                if (e.veiculo.getPesoMaximo() < peso)
+                {
+                    System.out.println("Estafeta " + e.nome + 
+                    " nao consegue entregar pois tem carga a mais para " + e.veiculo.getClass().getSimpleName());
+                    continue;
+                }
                 float velocidadeMedia = e.GetVelocidadeMedia(peso);
                 //Neste momento o estafeta tem de ir para o local de entrega e regressar
                 float tempo = (path.cost * 2) / velocidadeMedia;
                 System.out.println("Estafeta " + e.nome + " de " + e.veiculo.getClass().getSimpleName() + " demora "
                 + tempo + " horas" );
             }
+        
+
+            Estafeta best = melhorEstafetaTempo(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + best.nome + " é o mais RAPIDO para entregar ");
+            Estafeta eco = melhorEstafetaEcologico(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + eco.nome + " é o mais ECOLOGICO para entregar ");
+
             path.PrintPath();
             path.ReversePath();
             path.PrintPath();
@@ -157,4 +234,29 @@ public class SolverEncomendas {
         return e1;
 
     }*/
+
+    private static boolean CheckIfValid(int pesoEncomenda,Estafeta e,float dist,float horasParaEntregar)
+    {
+        if (pesoEncomenda > e.veiculo.getPesoMaximo())
+        {
+            //System.out.println("Estafeta nao consegue transportar esse peso :(");
+            return false;
+        }
+
+        float horasAtuaisParaEntregar = GetHoursToDeliver(pesoEncomenda, e, dist);
+
+        if (horasAtuaisParaEntregar > horasParaEntregar)
+        {
+            //System.out.println("Estafeta nao vai chegar a horas :(");
+            return false;
+        }
+        return true;
+    }
+
+    private static float GetHoursToDeliver(int peso, Estafeta e,float dist)
+    {
+        float veloMedia = e.GetVelocidadeMedia( peso);
+        float horasAtuaisParaEntregar = dist / veloMedia;
+        return horasAtuaisParaEntregar;
+    }
 }

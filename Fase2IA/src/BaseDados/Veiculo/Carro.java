@@ -11,6 +11,9 @@ public class Carro extends Veiculo{
 
     @Override
     public void setVelocidadeMedia(int peso) {
-        velocidadeMedia -= peso * 0.1f;        
+        if (pesoMaximo<peso)
+            velocidadeMedia = -1;
+        else
+            velocidadeMedia -= peso * 0.1f;        
     }
 }

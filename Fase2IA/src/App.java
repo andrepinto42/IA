@@ -12,13 +12,14 @@ import Procura.AStar;
 import Procura.BreadthFirst;
 import Procura.DepthFirst;
 import Procura.Greedy;
+import Procura.IterativeSearch;
 
 public class App {
     public static void main(String[] args) throws Exception {        
         DataBase db = new DataBase();
 
         Grafo g = db.BuildGrafo();
-        Test(db.g);
+        //Test(db.g);
         List<Pedido> listaPedido = db.BuildPedidos();
         
         Map<String,Estafeta> allEstafetas = db.BuildEstafetas();
@@ -48,5 +49,9 @@ public class App {
 
         var path4 = Greedy.GreedySearch(g, r1, r2);
         path4.Print();
+
+
+        var path5 = IterativeSearch.Search(g, r1, r2,1);
+        path5.Print();
     }
 }
