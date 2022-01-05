@@ -9,7 +9,7 @@ import BaseDados.Nodo.Rua;
 public class Path {
     public List<Rua> allRuasTravelled;
     public float cost;
-    private Stack<Rua> pathToTravel;
+    public Stack<Rua> pathToTravel;
     public Path()
     {
         allRuasTravelled = new ArrayList<Rua>();
@@ -38,7 +38,7 @@ public class Path {
             System.out.print( clone.pop().ruaNome + " -> ");
         }
 
-        System.out.println("Distance = " + cost + "km\n");
+        System.out.println("Distance = " + cost + "km");
     }
 
     public Stack<Rua> GetPathToTravel()
@@ -48,5 +48,15 @@ public class Path {
 
     public void SetPathToTravel(Stack<Rua> stackPath) {
         pathToTravel = stackPath;
+    }
+
+    public void ReversePath()
+    {
+        Stack<Rua> reversedStack = new Stack<Rua>();
+        while(!pathToTravel.empty())
+        {
+            reversedStack.push(pathToTravel.pop());
+        }
+        pathToTravel = reversedStack;
     }
 }

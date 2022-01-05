@@ -93,14 +93,16 @@ public class DepthFirst {
         path.allRuasTravelled = pathRuas;
         path.cost = GetCost(pathway,g);
 
-        Stack<Rua> reversedStack = new Stack<Rua>();
-        while(!pathway.empty())
-        {
-            reversedStack.push(pathway.pop());
-        }
-        reversedStack.push(r1);
-
-        path.SetPathToTravel(reversedStack);
+        // Stack<Rua> reversedStack = new Stack<Rua>();
+        // while(!pathway.empty())
+        // {
+        //     reversedStack.push(pathway.pop());
+        // }
+        // reversedStack.push(r1);
+        path.SetPathToTravel(pathway);
+        path.ReversePath();
+        path.pathToTravel.push(r1);
+        
 
         if (enableDebug) System.out.println("DISTANCIA TOTAL = " + path.cost);
         return path;

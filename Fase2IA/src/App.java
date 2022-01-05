@@ -18,7 +18,7 @@ public class App {
         DataBase db = new DataBase();
 
         Grafo g = db.BuildGrafo();
-        //Test(db.g);
+        Test(db.g);
         List<Pedido> listaPedido = db.BuildPedidos();
         
         Map<String,Estafeta> allEstafetas = db.BuildEstafetas();

@@ -124,13 +124,16 @@ public class SolverEncomendas {
             Rua ruaParaEntregar = pedido.getRua();
             int peso = pedido.produto.getKg();
             var path = DepthFirst.DFS(g,g.mainRua ,ruaParaEntregar);
-            
+           
             for (Estafeta e : allEstafetas.values()) {
                 float velocidadeMedia = e.GetVelocidadeMedia(peso);
-                float tempo = path.cost / velocidadeMedia;
+                //Neste momento o estafeta tem de ir para o local de entrega e regressar
+                float tempo = (path.cost * 2) / velocidadeMedia;
                 System.out.println("Estafeta " + e.nome + " de " + e.veiculo.getClass().getSimpleName() + " demora "
                 + tempo + " horas" );
             }
+            path.PrintPath();
+            path.ReversePath();
             path.PrintPath();
         }
     }
