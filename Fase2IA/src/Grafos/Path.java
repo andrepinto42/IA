@@ -9,7 +9,7 @@ import BaseDados.Nodo.Rua;
 public class Path {
     public List<Rua> allRuasTravelled;
     public float cost;
-    public Stack<Rua> pathToTravel;
+    private Stack<Rua> pathToTravel;
     public Path()
     {
         allRuasTravelled = new ArrayList<Rua>();
@@ -21,15 +21,32 @@ public class Path {
         System.out.println("\n-----Algoritmo começou em " + allRuasTravelled.get(0).ruaNome + "------");
 
         for (int i = 1; i < allRuasTravelled.size(); i++) {
-            System.out.println("From "+ allRuasTravelled.get(i-1).ruaNome + " to " + allRuasTravelled.get(i).ruaNome);
+            System.out.println("Visited -> " + allRuasTravelled.get(i).ruaNome);
         }
 
+        PrintPath();
+    }
+
+    public void PrintPath()
+    {
         System.out.println("Caminho a viajar :");
         
-        for (Rua r : pathToTravel) {
-            System.out.print(r.ruaNome + " -> ");
+        Stack<Rua> clone = (Stack<Rua>) pathToTravel.clone();
+
+        while(!clone.isEmpty())
+        {
+            System.out.print( clone.pop().ruaNome + " -> ");
         }
 
         System.out.println("Distance = " + cost + "km\n");
+    }
+
+    public Stack<Rua> GetPathToTravel()
+    {
+        return (Stack<Rua>) pathToTravel.clone();
+    }
+
+    public void SetPathToTravel(Stack<Rua> stackPath) {
+        pathToTravel = stackPath;
     }
 }

@@ -20,6 +20,6 @@ public abstract class Veiculo {
     public float getVelocidadeMedia() {
         return velocidadeMedia;
     }
-    protected abstract void setVelocidadeMedia(float peso);
+    public abstract void setVelocidadeMedia(int peso);
 
 }

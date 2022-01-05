@@ -11,18 +11,19 @@ import Grafos.Path;
 import Procura.AStar;
 import Procura.BreadthFirst;
 import Procura.DepthFirst;
+import Procura.Greedy;
 
 public class App {
     public static void main(String[] args) throws Exception {        
         DataBase db = new DataBase();
 
         Grafo g = db.BuildGrafo();
-        Test(db.g);
-        // List<Pedido> listaPedido = db.BuildPedidos();
+        //Test(db.g);
+        List<Pedido> listaPedido = db.BuildPedidos();
         
-        // Map<String,Estafeta> allEstafetas = db.BuildEstafetas();
+        Map<String,Estafeta> allEstafetas = db.BuildEstafetas();
         
-        // SolverEncomendas.Solve(listaPedido, g,allEstafetas);
+        SolverEncomendas.SolveDFS(listaPedido, g,allEstafetas);
     }
 
 
@@ -36,7 +37,16 @@ public class App {
         
         // path = DepthFirst.DFS(g, r1,r2);
 
-        var path = AStar.AStarFind(g, r1, r2);
-        path.Print();
+        var path1 = AStar.AStarFind(g, r1, r2);
+        path1.Print();
+
+        var path2 = BreadthFirst.BFS(g, r1, r2);
+        path2.Print();
+    
+        var path3 = DepthFirst.DFS(g, r1, r2);
+        path3.Print();
+
+        var path4 = Greedy.GreedySearch(g, r1, r2);
+        path4.Print();
     }
 }

@@ -118,16 +118,24 @@ public class SolverEncomendas {
         return null;
     }
 
-    public static void SolveDFS(List<Pedido> listaPedido, Grafo g)
+    public static void SolveDFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();
+            int peso = pedido.produto.getKg();
             var path = DepthFirst.DFS(g,g.mainRua ,ruaParaEntregar);
-            path.Print();
+            
+            for (Estafeta e : allEstafetas.values()) {
+                float velocidadeMedia = e.GetVelocidadeMedia(peso);
+                float tempo = path.cost / velocidadeMedia;
+                System.out.println("Estafeta " + e.nome + " de " + e.veiculo.getClass().getSimpleName() + " demora "
+                + tempo + " horas" );
+            }
+            path.PrintPath();
         }
     }
 
-    public static void SolveBFS(List<Pedido> listaPedido, Grafo g)
+    public static void SolveBFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();

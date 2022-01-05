@@ -36,7 +36,10 @@ public class Rua implements Comparable<Rua>{
     {
         hCost = h;
     }
-    
+    public float GetCostH()
+    {
+        return hCost;
+    }
     @Override
     public int compareTo(Rua another) {
         
