@@ -17,6 +17,7 @@ public abstract class Veiculo {
     public void setPesoMaximo(int pesoMaximo) {
         this.pesoMaximo = pesoMaximo;
     }
+    
     public abstract void setVelocidadeMedia(int peso);
     public abstract float getVelocidadeMedia(int peso);
 }

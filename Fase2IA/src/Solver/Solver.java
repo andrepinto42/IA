@@ -18,9 +18,11 @@ import Procura.IterativeSearch;
 
 public class Solver {
     static Map<Rua,Integer> mapaEntregas;
+    static float TotalCost;
     
     private static void Initialize() {
         mapaEntregas = new HashMap<Rua,Integer>();
+        TotalCost = 0f;
     }
     public static void SolveAll(List<Pedido> listaPedido, Grafo g, Map<String, Estafeta> allEstafetas)
     {
@@ -55,6 +57,7 @@ public class Solver {
                     break;
                 case "GREEDY":
                     path = Greedy.GreedySearch(g, g.mainRua, pedidoAtual.getRua());
+                    break;
                 default:
                     System.out.println("Not found algorithm");
                     return;
@@ -97,17 +100,16 @@ public class Solver {
         {
             mapaEntregas.put(last, mapaEntregas.get(last)+1 );
         }
-
         pedidoAtual.Print();
-
-
+        
         PrintEstafetas(pedidoAtual, allEstafetas, bestpath);
         
         bestpath.PrintActualPath();
+        TotalCost += bestpath.cost * 2;
     }
 
     private static void Finalize() {
-        String[] arr = new String[mapaEntregas.size() * 2];
+        String[] arr = new String[mapaEntregas.size() * 2+1];
         int i=0;
         for (var entry : mapaEntregas.entrySet()) {
             arr[i] = entry.getKey().ruaNome;
@@ -115,6 +117,7 @@ public class Solver {
             arr[i] = entry.getValue() + " entregas";
             i++;
         }
+        arr[i] = "Distancia total por todos os pedidos " + TotalCost + "km";
 
         Menu.Print(arr);
 

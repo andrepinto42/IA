@@ -22,7 +22,7 @@ public class Rua implements Comparable<Rua>{
 
 
     private float gCost = Float.MAX_VALUE;//Distance to begin node
-    private float hCost = Float.MIN_VALUE;//Distance to end node;
+    private float hCost = Float.MAX_VALUE;//Distance to end node;
 
     public float GetCostF()
     {

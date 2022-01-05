@@ -73,19 +73,25 @@ public class DataBase {
 
         Rua r1 = g.getAllRuas().get(3);
         Rua r2 = g.getAllRuas().get(4);
+        Rua r3 = g.getAllRuas().get(5);
+
 
         Cliente c1 = new Cliente("Tomas",r1);
         Cliente c2 = new Cliente("Ze",r2);
+        Cliente c3 = new Cliente("Quim",r3);
+
         Pedido p1 = new Pedido(c1, "pc",100f,5, new Date(), 3f);
         Pedido p2 = new Pedido(c1, "pao",2f,1, new Date(), 2f);
         Pedido p3 = new Pedido(c2, "mesinha de cabeceira",1000f,30, new Date(), 5f);
         Pedido p4 = new Pedido(c2, "mesinha de cabeceira",1000f,30, new Date(), 5f);
+        Pedido p5 = new Pedido(c3, "Computador",10f,40, new Date(), 5f);
         
         List<Pedido> lista = new ArrayList<Pedido>();
         lista.add(p1);
         lista.add(p2);
         lista.add(p3);
         lista.add(p4);
+        lista.add(p5);
 
         this.allPedidos = lista;
         return lista;

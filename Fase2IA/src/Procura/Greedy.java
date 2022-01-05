@@ -26,6 +26,10 @@ public class Greedy {
 
         List<Rua> allRuasTravelled = new ArrayList<Rua>();
         
+        stackPath = new Stack<Rua>();
+        
+        CleanAllRuas(allRuasTravelled);
+        
         Path p = new Path();
         
         Rua next = r1;
@@ -118,18 +122,20 @@ public class Greedy {
         return smallest;
     }
 
-    static Stack<Rua> stackPath = new Stack<Rua>();
+    static Stack<Rua> stackPath;
     
 
     private static Path GetPath(Map<Rua,Pai> pathway,Rua r1,Rua r2) {
         Path p = new Path();
 
-        if (pathway == null || pathway.size() == 0) return p;
+        if (pathway == null || pathway.size() == 0 || !pathway.containsKey(r2)) return p;
 
         float cost = 0f;
+      
         while(! r2.equals(r1))
         {
             stackPath.push(r2);
+
             cost += pathway.get(r2).cost;
             r2 = pathway.get(r2).ruaPai;
         }

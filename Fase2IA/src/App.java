@@ -43,7 +43,7 @@ public class App {
         };
 
         Menu.ClearScreen();
-        Menu.Print(arr, "Insira um algoritmo\n");
+        Menu.Print(arr, "Insira um algoritmo:");
         while(! (linha =sc.nextLine()).equals("quit"))
         {
             if (linha.equals("all"))
@@ -54,36 +54,8 @@ public class App {
             System.out.print("Insira uma linha qualquer: ");
             sc.nextLine();
             Menu.ClearScreen();
-            Menu.Print(arr,"Insira outro algoritmo\n");
+            Menu.Print(arr,"Insira outro algoritmo:");
         }
-       
     }
 
-
-
-    private static void Test(Grafo g) {
-
-        Rua r1 = g.mainRua;
-        Rua r2 = g.getAllRuas().get(5);
-        // Path path = BreadthFirst.BFS(g, r1,r2);
-
-        
-        // path = DepthFirst.DFS(g, r1,r2);
-
-        var path1 = AStar.AStarFind(g, r1, r2);
-        path1.Print();
-
-        var path2 = BreadthFirst.BFS(g, r1, r2);
-        path2.Print();
-    
-        var path3 = DepthFirst.DFS(g, r1, r2);
-        path3.Print();
-
-        var path4 = Greedy.GreedySearch(g, r1, r2);
-        path4.Print();
-
-
-        var path5 = IterativeSearch.Search(g, r1, r2,1);
-        path5.Print();
-    }
 }
