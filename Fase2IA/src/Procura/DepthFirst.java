@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Stack;
 
+import BaseDados.Nodo.Pai;
 import BaseDados.Nodo.Rua;
 import Grafos.Grafo;
 import Grafos.Path;
@@ -17,6 +18,7 @@ public class DepthFirst {
     static Stack<Rua> pathway;
     static boolean canStop;
     static boolean keepLooking;
+    static boolean enableDebug = false;
     
     private static void DFSUtil(Rua r1,Rua r2,Map<Rua,Boolean> visited)
     {
@@ -39,7 +41,7 @@ public class DepthFirst {
             if (keepLooking && !visited.get(next))
             {
                 pathway.push(next);
-                System.out.print("From " + r1.ruaNome + " -> " + next.ruaNome + " " +costNext + "$\n");
+                if (enableDebug) System.out.print("From " + r1.ruaNome + " -> " + next.ruaNome + " " +costNext + "$\n");
                 DFSUtil(next,r2,visited);    
             }
         }
@@ -79,14 +81,30 @@ public class DepthFirst {
             visited.put(novo, false);
         }
  
-        System.out.println("\n----DFS ALGORITHM-----\n");
-        System.out.println("Starting in " + r1.ruaNome);
+        if (enableDebug) System.out.println("\n----DFS ALGORITHM-----\n");
+        if (enableDebug) System.out.println("Starting in " + r1.ruaNome);
         
+       
+
         DFSUtil(r1,r2, visited);
+
+
 
         path.allRuasTravelled = pathRuas;
         path.cost = GetCost(pathway,g);
-        System.out.println("DISTANCIA TOTAL = " + path.cost);
+
+        // Stack<Rua> reversedStack = new Stack<Rua>();
+        // while(!pathway.empty())
+        // {
+        //     reversedStack.push(pathway.pop());
+        // }
+        // reversedStack.push(r1);
+        path.SetPathToTravel(pathway);
+        path.ReversePath();
+        path.pathToTravel.push(r1);
+        
+
+        if (enableDebug) System.out.println("DISTANCIA TOTAL = " + path.cost);
         return path;
     }
 
@@ -100,9 +118,8 @@ public class DepthFirst {
         for (Rua rua : pathway) {
             cost += g.caminhos.get(startingRua).get(rua);
             startingRua = rua;
-            System.out.println(rua.ruaNome);
         }
-        System.out.println(cost);
         return cost;
     }
+
 }

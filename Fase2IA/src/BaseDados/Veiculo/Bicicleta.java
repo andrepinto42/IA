@@ -10,7 +10,7 @@ public class Bicicleta extends Veiculo{
     }
 
     @Override
-    protected void setVelocidadeMedia(float peso) {
+    public void setVelocidadeMedia(int peso) {
 
         velocidadeMedia -= peso *0.7f;
     }

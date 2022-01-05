@@ -19,6 +19,8 @@ public class BreadthFirst {
 
     static Map<Rua,Pai> pathway;
 
+    public static boolean enableDebug = false;
+
     public static Path BFS(Grafo g)
     {
         return BFS(g,g.mainRua,null);
@@ -37,7 +39,7 @@ public class BreadthFirst {
         Path path = new Path();
         path.cost = 0f;
 
-        System.out.println("\n----BFS ALGORITHM-----\n");
+        if (enableDebug) System.out.println("\n----BFS ALGORITHM-----\n");
 
         // Mark all the vertices as not visited(By default
         // set as false)
@@ -46,27 +48,33 @@ public class BreadthFirst {
             visited.put(novo, false);
         }
 
+        List<Rua> allRuasTravelled = new ArrayList<Rua>();
+
         // Create a queue for BFS
         LinkedList<Rua> queue = new LinkedList<Rua>();
  
-        System.out.println("Starting at " + r1.ruaNome);
+        if (enableDebug) System.out.println("Starting at " + r1.ruaNome);
         // Mark the current node as visited and enqueue it
         visited.put(r1, true);
         queue.add(r1);
-        path.allRuasTravelled.add(r1);
+        allRuasTravelled.add(r1);
 
         //Inicializar a pathway com a rua a começar sendo a rua que não tem Pai
         pathway = new HashMap<Rua,Pai>();
         pathway.put(r1,null);
 
-        Search(g, r2, enableStoping, path, visited, queue);
+        Search(g, r2, enableStoping, path, visited, queue,allRuasTravelled);
+
         if (enableStoping)
-            path.cost = GetCost(r1,r2);
+        {
+            path = GetPath(r1,r2);
+            path.allRuasTravelled = allRuasTravelled;
+        }
         
         return path;
     }
 
-    private static void Search(Grafo g, Rua r2, boolean enableStoping, Path path, Map<Rua, Boolean> visited,LinkedList<Rua> queue) 
+    private static void Search(Grafo g, Rua r2, boolean enableStoping, Path path, Map<Rua, Boolean> visited,LinkedList<Rua> queue,List<Rua> allRuasTravelled) 
     {
         Rua r1;
         while (queue.size() != 0)
@@ -90,10 +98,10 @@ public class BreadthFirst {
                 //Still not visited this path
                 if ( ! visited.get(nextRua) )
                 {
-                    System.out.print("from " + r1.ruaNome + "-> " + nextRua.ruaNome + " " + nextCost + "$\n");
+                    if (enableDebug) System.out.print("from " + r1.ruaNome + "-> " + nextRua.ruaNome + " " + nextCost + "$\n");
                     visited.put(nextRua,true);
                     queue.add(nextRua);
-                    path.allRuasTravelled.add(nextRua);
+                    allRuasTravelled.add(nextRua);
                     
                     path.cost += nextCost;
 
@@ -104,18 +112,26 @@ public class BreadthFirst {
     }
 
 
-    private static float GetCost(Rua r1,Rua r2) {
-        if (pathway == null || pathway.size() == 0) return -1f;
+    private static Path GetPath(Rua r1,Rua r2) {
+        Path p = new Path();
+
+        Stack<Rua> stackPath = new Stack<Rua>();
+        
+        if (pathway == null || pathway.size() == 0) return p;
 
         float cost = 0f;
         while(! r2.equals(r1))
         {
-            System.out.println(r2.ruaNome);
+            stackPath.push(r2);
             cost += pathway.get(r2).cost;
             r2 = pathway.get(r2).ruaPai;
         }
 
-        return cost;
+        stackPath.push(r1);
+        p.cost = cost;
+        p.SetPathToTravel(stackPath);
+        
+        return p;
     }
 
 }

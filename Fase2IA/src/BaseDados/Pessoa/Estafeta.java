@@ -2,6 +2,7 @@ package BaseDados.Pessoa;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Vector;
 
 import BaseDados.Veiculo.Bicicleta;
 import BaseDados.Veiculo.Carro;
@@ -39,5 +40,11 @@ public class Estafeta {
                 veiculo = new Bicicleta();
                 break;
         }
+    }
+
+    public float GetVelocidadeMedia(int Peso)
+    {
+        veiculo.setVelocidadeMedia(Peso);
+        return veiculo.getVelocidadeMedia();
     }
 }
