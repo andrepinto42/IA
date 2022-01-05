@@ -166,7 +166,7 @@ public class SolverEncomendas {
         }
         return bestEstafeta;
     }
-    public static Estafeta melhorEstafeta (Pedido p, Map<String,Estafeta> map, Float dist){
+    /*public static Estafeta melhorEstafeta (Pedido p, Map<String,Estafeta> map, Float dist){
 
         int kg1 = p.produto.getKg();
 
@@ -210,40 +210,7 @@ public class SolverEncomendas {
         }
         //Nao sei o que colocar aqui
         return null;
-        
-        // int kg1 = p.produto.getKg();
-        // //Date newDate = new Date((long) (p.dataInicial.getTime() + p.horasParaEntregar * HOUR));
-
-        // for(Estafeta e : map.values()){
-        //     //tenta entregar com o veiculo mais ecologico
-        //     if(e.veiculo instanceof Bicicleta && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=5) {
-        //         if (!e.emUso) return e;
-        //     }
-
-        //     else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=20) {
-        //         if (!e.emUso) return e;
-        //     }
-
-        //     else if(e.veiculo instanceof Carro && getTempo(e,dist,kg1)<p.horasParaEntregar && kg1<=100) {
-        //         if (!e.emUso) return e;
-        //     }
-
-        //     //ultrapassa o tempo, tenta entregar com o veiculo mais rapido (se o peso for aceitavel)
-        //     else if(e.veiculo instanceof Mota && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=20) {
-        //         if (!e.emUso) {
-        //             System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
-        //             return e;
-        //         }
-        //     }
-        //     else if (e.veiculo instanceof Carro && getTempo(e,dist,kg1)>p.horasParaEntregar && kg1<=100) {
-        //         if (!e.emUso) {
-        //             System.out.println("A encomenda será entregue mas fora do prazo esatbelecido!\n");
-        //             return e;
-        //         }
-        //     }
-        // }
-        // return null;
-    }
+    }*/
 
     public static void SolveDFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
@@ -282,23 +249,74 @@ public class SolverEncomendas {
 
     public static void SolveBFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
+        System.out.println("\n-----------------BFS-----------------\n");
         for (Pedido pedido : listaPedido) {
             Rua ruaParaEntregar = pedido.getRua();
-            var path = BreadthFirst.BFS(g, g.mainRua, ruaParaEntregar);
-            path.Print();
+            int peso = pedido.produto.getKg();
+            var path = BreadthFirst.BFS(g,g.mainRua ,ruaParaEntregar);
+            System.out.println("\nInicio:\n");
+
+            for (Estafeta e : allEstafetas.values()) {
+                if (e.veiculo.getPesoMaximo() < peso)
+                {
+                    System.out.println("Estafeta " + e.nome +
+                            " nao consegue entregar pois tem carga a mais para " + e.veiculo.getClass().getSimpleName());
+                    continue;
+                }
+                float velocidadeMedia = e.GetVelocidadeMedia(peso);
+                //Neste momento o estafeta tem de ir para o local de entrega e regressar
+                float tempo = (path.cost * 2) / velocidadeMedia;
+                System.out.println("Estafeta " + e.nome + " de " + e.veiculo.getClass().getSimpleName() + " demora "
+                        + tempo + " horas" );
+            }
+
+
+            Estafeta best = melhorEstafetaTempo(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + best.nome + " é o mais RAPIDO para entregar ");
+            Estafeta eco = melhorEstafetaEcologico(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + eco.nome + " é o mais ECOLOGICO para entregar ");
+
+            path.PrintPath();
+            path.ReversePath();
+            path.PrintPath();
         }
     }
 
-    /*private static Estafeta GetRandomEstafeta(Map<String,Estafeta> map)
+    public static void SolveAStar(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
-        Estafeta e1 = null;
+        System.out.println("\n-----------------A*-----------------\n");
+        for (Pedido pedido : listaPedido) {
+            Rua ruaParaEntregar = pedido.getRua();
+            int peso = pedido.produto.getKg();
+            var path = AStar.AStarFind(g,g.mainRua ,ruaParaEntregar);
+            System.out.println("\nInicio:\n");
 
-        int size = map.size();
-        int random =(int) Math.floor(Math.random() * size);
-        e1 = map.values().stream().collect(Collectors.toList()).get(random);
-        return e1;
+            for (Estafeta e : allEstafetas.values()) {
+                if (e.veiculo.getPesoMaximo() < peso)
+                {
+                    System.out.println("Estafeta " + e.nome +
+                            " nao consegue entregar pois tem carga a mais para " + e.veiculo.getClass().getSimpleName());
+                    continue;
+                }
+                float velocidadeMedia = e.GetVelocidadeMedia(peso);
+                //Neste momento o estafeta tem de ir para o local de entrega e regressar
+                float tempo = (path.cost * 2) / velocidadeMedia;
+                System.out.println("Estafeta " + e.nome + " de " + e.veiculo.getClass().getSimpleName() + " demora "
+                        + tempo + " horas" );
+            }
 
-    }*/
+
+            Estafeta best = melhorEstafetaTempo(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + best.nome + " é o mais RAPIDO para entregar ");
+            Estafeta eco = melhorEstafetaEcologico(pedido, allEstafetas, path.cost);
+            System.out.println("Estafeta " + eco.nome + " é o mais ECOLOGICO para entregar ");
+
+            path.PrintPath();
+            path.ReversePath();
+            path.PrintPath();
+        }
+    }
+
 
     private static boolean CheckIfValid(int pesoEncomenda,Estafeta e,float dist,float horasParaEntregar)
     {
