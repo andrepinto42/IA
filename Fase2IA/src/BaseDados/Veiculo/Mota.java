@@ -14,6 +14,15 @@ public class Mota extends Veiculo{
         if (pesoMaximo<peso)
             velocidadeMedia = -1;
         else
-            velocidadeMedia -= peso * 0.5f;        
+            velocidadeMedia = 35f - peso * 0.5f;        
+    }
+
+    @Override
+    public float getVelocidadeMedia(int peso)
+    {
+        if (pesoMaximo<peso)
+            return  -1;
+        else
+            return  35f - peso *0.7f;
     }
 }

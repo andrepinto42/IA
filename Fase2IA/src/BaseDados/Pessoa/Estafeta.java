@@ -44,7 +44,6 @@ public class Estafeta {
 
     public float GetVelocidadeMedia(int Peso)
     {
-        veiculo.setVelocidadeMedia(Peso);
-        return veiculo.getVelocidadeMedia();
+        return veiculo.getVelocidadeMedia(Peso);
     }
 }

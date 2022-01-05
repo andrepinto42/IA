@@ -51,6 +51,7 @@ public class Greedy {
             
             if (enableDebug) System.out.println("\nGreedy is looking at " + next.ruaNome);
 
+            //Estado Final
             if (next.equals(r2))
             {
                 if (enableDebug) System.out.println("FOUND IT");
@@ -92,9 +93,16 @@ public class Greedy {
         p = GetPath(pathway, r1, r2);
         p.allRuasTravelled = allRuasTravelled;
         p.algorithm = "Greedy Search";
+        CleanAllRuas(allRuasTravelled);
         return p;
     }
 
+    private static void CleanAllRuas(List<Rua> allRuasTravelled) {
+        for (Rua r : allRuasTravelled) {
+            r.SetCostG(Float.MAX_VALUE);
+            r.SetCostH(Float.MAX_VALUE);
+        }
+    }
     private static Rua GetMinimum(Queue<Rua> openSet) {
         var it = openSet.iterator();
 

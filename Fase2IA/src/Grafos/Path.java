@@ -30,7 +30,7 @@ public class Path {
 
     public void PrintPath()
     {
-        System.out.println("\nCaminho a viajar usando "+ algorithm + " :");
+        System.out.println("Caminho a viajar usando "+ algorithm + " :");
         
         Stack<Rua> clone = (Stack<Rua>) pathToTravel.clone();
 
@@ -59,5 +59,13 @@ public class Path {
             reversedStack.push(pathToTravel.pop());
         }
         pathToTravel = reversedStack;
+    }
+
+    public void PrintActualPath() {
+        System.out.print("\n");
+        PrintPath();
+        ReversePath();
+        PrintPath();
+        System.out.println("Distancia total = " +(2* cost) +"km\n-------------------------------------"); 
     }
 }

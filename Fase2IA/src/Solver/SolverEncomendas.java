@@ -119,6 +119,8 @@ public class SolverEncomendas {
             if (!valid) continue;
             float horasAtuaisParaEntregar = GetHoursToDeliver(pesoEncomenda, e, dist);
             
+            if (horasAtuaisParaEntregar<0 ) continue;
+            
             if (horasAtuaisParaEntregar > horasParaEntregar)
             {
                //Estafeta nao vai chegar a horas
@@ -152,7 +154,12 @@ public class SolverEncomendas {
             boolean valid = CheckIfValid(pesoEncomenda, e, dist, horasParaEntregar);
             
             if (!valid) continue;
+
             float horasAtuaisParaEntregar = GetHoursToDeliver(pesoEncomenda, e, dist);
+            //Se o estafeta demorar horas negativas significa que não pode fazer a entrega
+            if (horasAtuaisParaEntregar<0 ) continue;
+
+            System.out.println(e.nome + " com horas " + horasAtuaisParaEntregar);
 
             if (bestEstafeta == null)
             {
@@ -271,10 +278,11 @@ public class SolverEncomendas {
 
         
         for (Path path : allPaths) {
-            path.PrintPath();
+            // path.PrintPath();
             pathQueue.add(path);
         }
 
+        
         return pathQueue.poll();
     }
 

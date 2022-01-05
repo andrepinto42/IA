@@ -30,4 +30,11 @@ public class Pedido {
     {
         return cliente.rua;
     }
+    public void Print() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Pedido do Cliente ").append(cliente.nome).append(" -> ");
+        sb.append(produto.getNomeProduto()).append(" com custo ").append(produto.getPreco());
+        sb.append(" | Prazo de entrega ").append(horasParaEntregar).append(" horas");
+        System.out.println(sb.toString());
+    }
 }

@@ -25,6 +25,8 @@ public class AStar {
         Map<Rua,Pai> pathway = new HashMap<Rua,Pai>();
 
         List<Rua> allRuasTravelled = new ArrayList<Rua>();
+
+        stackPath =  new Stack<Rua>();
         
         Path p = new Path();
         
@@ -96,7 +98,16 @@ public class AStar {
         p = GetPath(pathway, r1, r2);
         p.allRuasTravelled = allRuasTravelled;
         p.algorithm = "AStar";
+
+        CleanAllRuas(allRuasTravelled);
         return p;
+    }
+
+    private static void CleanAllRuas(List<Rua> allRuasTravelled) {
+        for (Rua r : allRuasTravelled) {
+            r.SetCostG(Float.MAX_VALUE);
+            r.SetCostH(Float.MAX_VALUE);
+        }
     }
 
     private static Rua GetMinimum(Queue<Rua> openSet) {
@@ -114,17 +125,21 @@ public class AStar {
         return smallest;
     }
 
-    static Stack<Rua> stackPath = new Stack<Rua>();
+    static Stack<Rua> stackPath;
     
     private static float GetCostToReachRua(Map<Rua,Pai> pathway,Rua r1,Rua r2)
     {
         float cost = 0f;
+        if (pathway == null || pathway.size() == 0) return 0f;
+
         //Se ainda nao tiver um caminho guardado então devolve 0
         if (!pathway.containsKey(r2))
             return 0f;
-
+        
         while(!r2.equals(r1))
         {
+            Pai pai = pathway.get(r2);
+            if (pai==null) break;
             cost += pathway.get(r2).cost;
             r2 = pathway.get(r2).ruaPai;
         }
@@ -133,13 +148,17 @@ public class AStar {
 
     private static Path GetPath(Map<Rua,Pai> pathway,Rua r1,Rua r2) {
         Path p = new Path();
+        float cost = 0f;
 
         if (pathway == null || pathway.size() == 0) return p;
 
-        float cost = 0f;
+
         while(! r2.equals(r1))
         {
+            Pai pai = pathway.get(r2);
             stackPath.push(r2);
+
+            if (pai == null) break;
             cost += pathway.get(r2).cost;
             r2 = pathway.get(r2).ruaPai;
         }
