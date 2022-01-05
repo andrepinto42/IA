@@ -70,7 +70,7 @@ public class Greedy {
                     openSet.add(adjacente);
                 
                 float Hcost = Rua.DistanceRuas(adjacente, r2);
-                System.out.println("\n\n H COST " + Hcost+ " current " + adjacente.GetCostH());
+                if (enableDebug) System.out.println("\n\n H COST " + Hcost+ " current " + adjacente.GetCostH());
                 if (adjacente.GetCostH() >= Hcost)
                 {
                     //Atualizar este nodo pois este caminho agora descoberto é mais rapido
@@ -91,6 +91,7 @@ public class Greedy {
         }
         p = GetPath(pathway, r1, r2);
         p.allRuasTravelled = allRuasTravelled;
+        p.algorithm = "Greedy Search";
         return p;
     }
 

@@ -63,18 +63,19 @@ public class BreadthFirst {
         pathway = new HashMap<Rua,Pai>();
         pathway.put(r1,null);
 
-        Search(g, r2, enableStoping, path, visited, queue,allRuasTravelled);
+        SearchState(g, r2, enableStoping, path, visited, queue,allRuasTravelled);
 
         if (enableStoping)
         {
             path = GetPath(r1,r2);
             path.allRuasTravelled = allRuasTravelled;
         }
-        
+
+        path.algorithm = "Breadth First";
         return path;
     }
 
-    private static void Search(Grafo g, Rua r2, boolean enableStoping, Path path, Map<Rua, Boolean> visited,LinkedList<Rua> queue,List<Rua> allRuasTravelled) 
+    private static void SearchState(Grafo g, Rua r2, boolean enableStoping, Path path, Map<Rua, Boolean> visited,LinkedList<Rua> queue,List<Rua> allRuasTravelled) 
     {
         Rua r1;
         while (queue.size() != 0)
@@ -130,7 +131,6 @@ public class BreadthFirst {
         stackPath.push(r1);
         p.cost = cost;
         p.SetPathToTravel(stackPath);
-        
         return p;
     }
 

@@ -2,7 +2,6 @@ import java.util.List;
 import java.util.Map;
 
 import BaseDados.Encomendas.Pedido;
-import BaseDados.Encomendas.SolverEncomendas;
 import BaseDados.Nodo.Rua;
 import BaseDados.Pessoa.Estafeta;
 
@@ -13,6 +12,7 @@ import Procura.BreadthFirst;
 import Procura.DepthFirst;
 import Procura.Greedy;
 import Procura.IterativeSearch;
+import Solver.SolverEncomendas;
 
 public class App {
     public static void main(String[] args) throws Exception {        
@@ -24,7 +24,10 @@ public class App {
         
         Map<String,Estafeta> allEstafetas = db.BuildEstafetas();
         
-        SolverEncomendas.SolveDFS(listaPedido, g,allEstafetas);
+        // SolverEncomendas.SolveDFS(listaPedido, g,allEstafetas);
+
+        var bestpath = SolverEncomendas.SolveUsingAllAlgorithm(listaPedido.get(0), g);
+        bestpath.PrintPath();
     }
 
 

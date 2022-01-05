@@ -102,7 +102,7 @@ public class DepthFirst {
         path.SetPathToTravel(pathway);
         path.ReversePath();
         path.pathToTravel.push(r1);
-        
+        path.algorithm = "Depth First";
 
         if (enableDebug) System.out.println("DISTANCIA TOTAL = " + path.cost);
         return path;

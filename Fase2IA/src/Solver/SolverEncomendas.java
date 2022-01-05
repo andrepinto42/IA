@@ -1,4 +1,4 @@
-package BaseDados.Encomendas;
+package Solver;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -6,6 +6,7 @@ import java.util.stream.DoubleStream;
 
 import javax.lang.model.util.ElementScanner6;
 
+import BaseDados.Encomendas.Pedido;
 import BaseDados.Nodo.Rua;
 import BaseDados.Pessoa.Estafeta;
 import BaseDados.Veiculo.Bicicleta;
@@ -13,9 +14,12 @@ import BaseDados.Veiculo.Carro;
 import BaseDados.Veiculo.Mota;
 import BaseDados.Veiculo.Veiculo;
 import Grafos.Grafo;
+import Grafos.Path;
 import Procura.AStar;
 import Procura.BreadthFirst;
 import Procura.DepthFirst;
+import Procura.Greedy;
+import Procura.IterativeSearch;
 
 //import static jdk.nashorn.internal.parser.DateParser.HOUR;
 
@@ -211,6 +215,35 @@ public class SolverEncomendas {
         //Nao sei o que colocar aqui
         return null;
     }*/
+
+    public static Path SolveUsingAllAlgorithm(Pedido pedido, Grafo g){
+        Rua StartingPoint = g.mainRua;
+
+        Comparator<Path> pathComparer = new Comparator<Path>() {
+            @Override
+            public int compare(Path o1, Path o2) {
+                return (int) (o1.cost - o2.cost);
+            }
+        };
+        Path[] allPaths = new Path[5];
+
+        Rua endingPoint = pedido.getRua();
+        PriorityQueue<Path> pathQueue = new PriorityQueue<>(pathComparer);
+
+        allPaths[0] = BreadthFirst.BFS(g, StartingPoint,endingPoint);
+        allPaths[1] = DepthFirst.DFS(g, StartingPoint,endingPoint);
+        allPaths[2] = IterativeSearch.Search(g, StartingPoint,endingPoint,3);
+        allPaths[3] = AStar.AStarFind(g,StartingPoint, endingPoint);
+        allPaths[4] = Greedy.GreedySearch(g,StartingPoint, endingPoint);
+
+        
+        for (Path path : allPaths) {
+            path.PrintPath();
+            pathQueue.add(path);
+        }
+
+        return pathQueue.poll();
+    }
 
     public static void SolveDFS(List<Pedido> listaPedido, Grafo g,Map<String,Estafeta> allEstafetas)
     {
