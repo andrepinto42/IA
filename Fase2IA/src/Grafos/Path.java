@@ -7,6 +7,7 @@ import java.util.Stack;
 import BaseDados.Nodo.Rua;
 
 public class Path {
+    public String algorithm;
     public List<Rua> allRuasTravelled;
     public float cost;
     public Stack<Rua> pathToTravel;
@@ -29,7 +30,7 @@ public class Path {
 
     public void PrintPath()
     {
-        System.out.println("Caminho a viajar :");
+        System.out.println("\nCaminho a viajar usando "+ algorithm + " :");
         
         Stack<Rua> clone = (Stack<Rua>) pathToTravel.clone();
 
@@ -38,7 +39,7 @@ public class Path {
             System.out.print( clone.pop().ruaNome + " -> ");
         }
 
-        System.out.println("Distance = " + cost + "km");
+        System.out.println("Distance = " + cost + "km\n");
     }
 
     public Stack<Rua> GetPathToTravel()

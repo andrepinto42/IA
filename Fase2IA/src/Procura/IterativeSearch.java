@@ -72,7 +72,7 @@ public class IterativeSearch {
             if (!found)
             {
                 path = new Path();
-                path.cost = -1f;
+                path.cost = Float.MAX_VALUE;
                 path.pathToTravel = new Stack<Rua>();
             }
             else
@@ -82,7 +82,7 @@ public class IterativeSearch {
 
             path.allRuasTravelled = allRuasTravelled;
         }
-        
+        path.algorithm = "Iterative Search";
         return path;
     }
 

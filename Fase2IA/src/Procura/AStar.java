@@ -95,6 +95,7 @@ public class AStar {
         }
         p = GetPath(pathway, r1, r2);
         p.allRuasTravelled = allRuasTravelled;
+        p.algorithm = "AStar";
         return p;
     }
 
